@@ -1,0 +1,881 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLASHCARD Y HỌC - SYNHOC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FEF1ED 100%);
+            min-height: 100vh;
+            color: #1A1F2E;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            color: #1A1F2E;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #FA8072, #9C27B0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header h1 i {
+            margin-right: 15px;
+            color: #FA8072;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #64748B;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 14px 40px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            background: #FFFFFF;
+            color: #4A5568;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E2E8F0;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #FA8072, #9C27B0);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 20px rgba(250, 128, 114, 0.3);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* CONTENT */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARD */
+        .card {
+            background: #FFFFFF;
+            border-radius: 32px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E2E8F0;
+        }
+
+        .card h2, .card h3 {
+            color: #1A1F2E;
+            text-transform: uppercase;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2D3748;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: #FA8072;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #FCDDD5;
+            border-radius: 20px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            background: #FFFFFF;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #FA8072;
+            box-shadow: 0 0 0 3px rgba(250, 128, 114, 0.15);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FA8072, #9C27B0);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(250, 128, 114, 0.3);
+        }
+
+        /* DECK LIST */
+        .deck-list {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .deck-item {
+            background: #F8FAFF;
+            border-radius: 20px;
+            padding: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid #E2E8F0;
+        }
+
+        .deck-item:hover {
+            transform: translateY(-5px);
+            border-color: #3B82F6;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .deck-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .deck-item h4 {
+            color: #1A1F2E;
+            margin-bottom: 5px;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            color: #EF4444;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-btn:hover {
+            background: #EF4444;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* GAME AREA */
+        .game-controls {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 40px;
+            min-height: 400px;
+            background: #F8FAFF;
+            border-radius: 40px;
+            border: 2px solid #E2E8F0;
+            position: relative;
+            perspective: 2000px;
+        }
+
+        @keyframes dealCard {
+            0% {
+                opacity: 0;
+                transform: translate(-100px, -200px) rotate(-45deg) scale(0);
+            }
+            60% {
+                opacity: 0.8;
+                transform: translate(10px, 10px) rotate(5deg) scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+        }
+
+        .card-wrapper {
+            width: 180px;
+            height: 250px;
+            perspective: 1000px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .card-wrapper.dealt {
+            animation: dealCard 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .card-wrapper:hover {
+            transform: translateY(-10px) scale(1.02);
+            z-index: 10;
+        }
+
+        .flash-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-wrapper.flipped .flash-card {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            border: 2px solid white;
+        }
+
+        .card-front i {
+            font-size: 3.5em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .card-front .card-pattern {
+            font-size: 2em;
+            color: rgba(255, 255, 255, 0.3);
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .card-back {
+            background: white;
+            transform: rotateY(180deg);
+            overflow: hidden;
+            border: 1px solid #E2E8F0;
+        }
+
+        .card-back.default {
+            background: linear-gradient(135deg, #F1F5F9, #EFF6FF);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-back.default i {
+            font-size: 3em;
+            color: #3B82F6;
+            margin-bottom: 10px;
+        }
+
+        .card-back.default .back-text {
+            color: #4A5568;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .card-back.answered {
+            background: white;
+        }
+
+        .card-back.correct {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            border: 2px solid #10B981;
+        }
+
+        .card-back.incorrect {
+            background: linear-gradient(135deg, #FEE2E2, #FECACA);
+            border: 2px solid #EF4444;
+        }
+
+        .card-back img {
+            width: 100%;
+            height: 140px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .card-back h3 {
+            font-size: 0.9em;
+            color: #1A1F2E;
+            margin-bottom: 5px;
+        }
+
+        .result-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+        }
+
+        .result-icon.correct {
+            color: #10B981;
+        }
+
+        .result-icon.incorrect {
+            color: #EF4444;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            background: #F8FAFF;
+            padding: 10px;
+        }
+
+        .modal-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-input input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #E2E8F0;
+            border-radius: 40px;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .modal-input input:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+
+        .modal-input button {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            color: white;
+            border: none;
+            width: 54px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        /* SCORE MODAL */
+        .score-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .score-modal.active {
+            display: flex;
+        }
+
+        .score-content {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            padding: 48px;
+            border-radius: 48px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .score-content i {
+            font-size: 4em;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+
+        .score-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #FFD700;
+        }
+
+        .score-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+        }
+
+        .score-message {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 40px;
+        }
+
+        .score-close {
+            background: #FFD700;
+            color: #1A1F2E;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #64748B;
+            font-size: 1.1rem;
+        }
+
+        .empty-message i {
+            font-size: 3em;
+            color: #3B82F6;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-brand">SYNHOC SYSTEM</div>
+        <nav class="site-nav">
+            <a href="index.html">TRANG CHỦ</a>
+            <a href="chatbotai.html">CHATBOT AI</a>
+            <a href="flashcard.html" class="active">FLASHCARD</a>
+            <a href="kinhhienvi.html">KÍNH HIỂN VI</a>
+            <a href="model3d.html">MODEL 3D</a>
+            <a href="quantriAI.html">QUẢN TRỊ AI</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-dragon"></i>
+                FLASHCARD Y HỌC
+            </h1>
+            <p>LẬT BÀI, HỌC GIẢI PHẪU VÀ GHI ĐIỂM!</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('create')">
+                <i class="fas fa-plus-circle"></i>
+                TẠO BÀI
+            </button>
+            <button class="tab-btn" onclick="switchTab('play')">
+                <i class="fas fa-play-circle"></i>
+                CHƠI BÀI
+            </button>
+        </div>
+
+        <!-- TAB TẠO FLASHCARD -->
+        <div id="create-tab" class="tab-content active">
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">
+                    <i class="fas fa-pen" style="color: #3B82F6; margin-right: 10px;"></i>
+                    TẠO LÁ BÀI MỚI
+                </h2>
+                <form id="flashcard-form" onsubmit="addFlashCard(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> TÊN BỘ PHẬN/CƠ QUAN</label>
+                        <input type="text" class="form-control" id="organ-name" placeholder="VÍ DỤ: TIM, PHỔI, GAN..." required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-image"></i> LINK HÌNH ẢNH</label>
+                        <input type="url" class="form-control" id="image-url" placeholder="HTTPS://EXAMPLE.COM/IMAGE.JPG" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i>
+                        THÊM VÀO BỘ BÀI
+                    </button>
+                </form>
+
+                <div style="margin-top: 40px;">
+                    <h3 style="margin-bottom: 20px;">
+                        <i class="fas fa-layer-group" style="color: #3B82F6; margin-right: 10px;"></i>
+                        BỘ SƯU TẬP (<span id="card-count-display">0</span> LÁ)
+                    </h3>
+                    <div id="flashcard-list" class="deck-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CHƠI -->
+        <div id="play-tab" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">
+                    <i class="fas fa-gamepad" style="color: #3B82F6; margin-right: 10px;"></i>
+                    BÀN CHƠI BÀI
+                </h2>
+                
+                <div class="game-controls">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label><i class="fas fa-cards"></i> SỐ LÁ BÀI (TỐI ĐA 10)</label>
+                        <input type="number" class="form-control" id="card-count" value="5" min="1" max="10" style="width: 100px;">
+                    </div>
+                    <button class="btn" onclick="startGame()">
+                        <i class="fas fa-shuffle"></i>
+                        XÀO BÀI & BẮT ĐẦU
+                    </button>
+                </div>
+
+                <div id="cards-container" class="cards-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD MODAL -->
+    <div id="card-modal" class="modal">
+        <div class="modal-content">
+            <img id="modal-image" src="" alt="CARD IMAGE">
+            <h3 style="margin-bottom: 20px; color: #1A1F2E; text-align: center; text-transform: uppercase;">NHẬP TÊN BỘ PHẬN:</h3>
+            <div class="modal-input">
+                <input type="text" id="modal-answer" placeholder="NHẬP CÂU TRẢ LỜI..." onkeypress="handleModalKeyPress(event)">
+                <button onclick="submitModalAnswer()">
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCORE MODAL -->
+    <div id="score-modal" class="score-modal">
+        <div class="score-content">
+            <i class="fas fa-trophy"></i>
+            <h2>KẾT QUẢ</h2>
+            <div class="score-circle">
+                <span class="score-number" id="score-display">0</span>
+            </div>
+            <div class="score-outof" id="score-outof">/10 ĐIỂM</div>
+            <div class="score-message" id="score-message"></div>
+            <button class="score-close" onclick="closeScoreModal()">
+                <i class="fas fa-check-circle"></i> CHƠI TIẾP
+            </button>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        © 2026 SYNHOC - HỆ THỐNG HỌC TẬP SINH HỌC THÔNG MINH. TẤT CẢ QUYỀN ĐƯỢC BẢO LƯU.
+    </footer>
+
+    <script>
+        let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+        let currentGameCards = [];
+        let currentModalCard = null;
+        let currentModalIndex = null;
+        let score = 0;
+        let totalCards = 0;
+        let isFlipping = false;
+        let hasDealt = false;
+
+        function displayFlashCards() {
+            const listElement = document.getElementById('flashcard-list');
+            document.getElementById('card-count-display').textContent = flashcards.length;
+            
+            if (flashcards.length === 0) {
+                listElement.innerHTML = `
+                    <div class="empty-message" style="grid-column: 1/-1;">
+                        <i class="fas fa-plus-circle"></i>
+                        <p>CHƯA CÓ LÁ BÀI NÀO. HÃY TẠO LÁ BÀI ĐẦU TIÊN NHÉ!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listElement.innerHTML = flashcards.map((card, index) => `
+                <div class="deck-item">
+                    <img src="${card.imageUrl}" alt="${card.name}" onerror="this.src='https://via.placeholder.com/200x150?text=NO+IMAGE'">
+                    <h4>${card.name}</h4>
+                    <button class="delete-btn" onclick="deleteFlashCard(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addFlashCard(event) {
+            event.preventDefault();
+            const name = document.getElementById('organ-name').value;
+            const imageUrl = document.getElementById('image-url').value;
+            flashcards.push({ name, imageUrl });
+            localStorage.setItem('flashcards', JSON.stringify(flashcards));
+            document.getElementById('flashcard-form').reset();
+            displayFlashCards();
+            alert('ĐÃ THÊM LÁ BÀI MỚI!');
+        }
+
+        function deleteFlashCard(index) {
+            if (confirm('BẠN CÓ CHẮC MUỐN XÓA LÁ BÀI NÀY?')) {
+                flashcards.splice(index, 1);
+                localStorage.setItem('flashcards', JSON.stringify(flashcards));
+                displayFlashCards();
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'create') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('create-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('play-tab').classList.add('active');
+            }
+        }
+
+        function startGame() {
+            if (flashcards.length === 0) {
+                alert('CHƯA CÓ LÁ BÀI NÀO! HÃY TẠO BÀI TRƯỚC KHI CHƠI.');
+                return;
+            }
+            const cardCount = Math.min(parseInt(document.getElementById('card-count').value) || 5, flashcards.length, 10);
+            currentGameCards = [...flashcards].sort(() => Math.random() - 0.5).slice(0, cardCount).map(card => ({
+                ...card, isFlipped: false, isAnswered: false, isCorrect: false, isFlipping: false
+            }));
+            score = 0;
+            totalCards = cardCount;
+            hasDealt = false;
+            displayCards();
+            setTimeout(() => {
+                document.querySelectorAll('.card-wrapper').forEach(card => card.classList.add('dealt'));
+                hasDealt = true;
+            }, 100);
+        }
+
+        function displayCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = currentGameCards.map((card, index) => {
+                let backClass = 'card-back';
+                if (!card.isAnswered) backClass += ' default';
+                else backClass += card.isCorrect ? ' correct' : ' incorrect';
+                return `
+                <div class="card-wrapper ${card.isFlipped ? 'flipped' : ''}" onclick="handleCardClick(${index})" data-index="${index}">
+                    <div class="flash-card">
+                        <div class="card-front">
+                            <i class="fas fa-heartbeat"></i>
+                            <i class="fas fa-dragon card-pattern"></i>
+                        </div>
+                        <div class="${backClass}">
+                            ${!card.isAnswered ? `
+                                <i class="fas fa-question-circle"></i>
+                                <div class="back-text">Y HỌC</div>
+                            ` : `
+                                <img src="${card.imageUrl}" alt="${card.name}">
+                                <h3>${card.name}</h3>
+                                <div class="result-icon ${card.isCorrect ? 'correct' : 'incorrect'}">
+                                    <i class="fas ${card.isCorrect ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function handleCardClick(index) {
+            const card = currentGameCards[index];
+            if (card.isAnswered || isFlipping) return;
+            isFlipping = true;
+            const cardElement = document.querySelector(`[data-index="${index}"]`);
+            cardElement.classList.add('flipped');
+            setTimeout(() => {
+                isFlipping = false;
+                openModal(card, index);
+            }, 400);
+        }
+
+        function openModal(card, index) {
+            currentModalCard = card;
+            currentModalIndex = index;
+            document.getElementById('modal-image').src = card.imageUrl;
+            document.getElementById('card-modal').classList.add('active');
+            document.getElementById('modal-answer').value = '';
+            document.getElementById('modal-answer').focus();
+        }
+
+        function handleModalKeyPress(event) {
+            if (event.key === 'Enter') submitModalAnswer();
+        }
+
+        function submitModalAnswer() {
+            const answer = document.getElementById('modal-answer').value.trim().toLowerCase();
+            if (!answer || !currentModalCard) return;
+            const isCorrect = answer === currentModalCard.name.toLowerCase();
+            currentModalCard.isAnswered = true;
+            currentModalCard.isCorrect = isCorrect;
+            if (isCorrect) score++;
+            document.getElementById('card-modal').classList.remove('active');
+            displayCards();
+            if (hasDealt) {
+                setTimeout(() => document.querySelectorAll('.card-wrapper').forEach(c => c.classList.add('dealt')), 50);
+            }
+            if (currentGameCards.every(card => card.isAnswered)) {
+                const scoreOutOf10 = Math.round((score / totalCards) * 10);
+                document.getElementById('score-display').textContent = scoreOutOf10;
+                document.getElementById('score-outof').innerHTML = `/10 ĐIỂM (${score}/${totalCards} CÂU ĐÚNG)`;
+                let message = scoreOutOf10 === 10 ? '🎉 XUẤT SẮC! BẠN LÀ BÁC SĨ TƯƠNG LAI!' :
+                              scoreOutOf10 >= 8 ? '👍 GIỎI QUÁ! CỐ GẮNG THÊM CHÚT NỮA!' :
+                              scoreOutOf10 >= 5 ? '📚 TẠM ỔN! HÃY HỌC THÊM NHÉ!' : '💪 CẦN CỐ GẮNG HƠN NỮA!';
+                document.getElementById('score-message').textContent = message;
+                document.getElementById('score-modal').classList.add('active');
+            }
+        }
+
+        function closeScoreModal() {
+            document.getElementById('score-modal').classList.remove('active');
+        }
+
+        displayFlashCards();
+    </script>
+</body>
+</html>
