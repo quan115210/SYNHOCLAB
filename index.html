@@ -6,7 +6,6 @@
     <title>SYNHOC LAB - HỆ THỐNG HỌC TẬP SINH HỌC THÔNG MINH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Font Dancing Script + Playfair Display -->
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
     <style>
@@ -18,27 +17,22 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            /* ===== NỀN CARO Ô VUÔNG + HIỆU ỨNG OMBRE MỜ DẦN ===== */
             background: 
-                /* Lớp phủ ombre mờ dần từ trên xuống dưới (trắng đục -> trong suốt) */
                 linear-gradient(180deg, 
                     rgba(255, 255, 255, 0.7) 0%, 
                     rgba(255, 255, 255, 0.3) 30%,
                     rgba(255, 255, 255, 0.05) 70%,
                     transparent 100%),
-                /* Đường kẻ dọc tạo ô vuông - màu cam cá hồi nhạt hơn để mờ */
                 repeating-linear-gradient(90deg, 
                     rgba(250, 128, 114, 0.35) 0px, 
                     rgba(250, 128, 114, 0.35) 1px,
                     transparent 1px,
                     transparent 40px),
-                /* Đường kẻ ngang tạo ô vuông */
                 repeating-linear-gradient(0deg, 
                     rgba(250, 128, 114, 0.35) 0px, 
                     rgba(250, 128, 114, 0.35) 1px,
                     transparent 1px,
                     transparent 40px),
-                /* Nền gradient chính - ombre từ trắng hồng nhạt đến cam nhạt */
                 linear-gradient(135deg, #FFF5F2 0%, #FFE8E0 50%, #FFDDD0 100%);
             min-height: 100vh;
             color: #1A1F2E;
@@ -55,7 +49,7 @@
             z-index: 2;
         }
 
-        /* HEADER */
+        /* HEADER MỚI: KẾT HỢP ĐIỆN TIM ĐỒ VỚI CHỮ Ở GIỮA */
         .header {
             text-align: center;
             padding: 40px 20px 50px;
@@ -79,140 +73,96 @@
             z-index: 3;
         }
 
-        .title-wrapper {
-            position: relative;
-            display: inline-block;
-            margin: 0 auto;
-            padding: 0 30px;
-        }
-
-        .title-side-left,
-        .title-side-right {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 80px;
-            height: 3px;
-            background: linear-gradient(90deg, #FA8072, #9C27B0);
-            border-radius: 4px;
-            opacity: 0;
-            animation: slideInSide 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-        }
-
-        .title-side-left {
-            left: -100px;
-            transform-origin: left center;
-            animation-name: slideInLeft;
-        }
-
-        .title-side-right {
-            right: -100px;
-            transform-origin: right center;
-            animation-name: slideInRight;
-        }
-
-        .title-side-left::before,
-        .title-side-right::before {
-            content: "✨";
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-            color: #FA8072;
-            background: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
+        /* Hàng ngang chứa ECG trái, chữ, ECG phải */
+        .title-ecg-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(250, 128, 114, 0.3);
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
         }
 
-        .title-side-left::before {
-            right: -14px;
+        .ecg-side {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 8px 16px;
+            border-radius: 60px;
+            border: 1px solid rgba(250, 128, 114, 0.3);
         }
 
-        .title-side-right::before {
-            left: -14px;
+        .ecg-side i {
+            font-size: 1.4rem;
+            color: #FA5A5A;
         }
 
-        @keyframes slideInLeft {
-            0% { opacity: 0; width: 0; left: -40px; }
-            60% { opacity: 1; width: 90px; left: -90px; }
-            100% { opacity: 1; width: 80px; left: -100px; }
+        .ecg-path-small {
+            width: 80px;
+            height: 30px;
         }
 
-        @keyframes slideInRight {
-            0% { opacity: 0; width: 0; right: -40px; }
-            60% { opacity: 1; width: 90px; right: -90px; }
-            100% { opacity: 1; width: 80px; right: -100px; }
+        .ecg-path-small svg {
+            width: 100%;
+            height: 100%;
         }
 
-        @media (max-width: 768px) {
-            .title-side-left, .title-side-right { width: 40px; }
-            .title-side-left { left: -55px; }
-            .title-side-right { right: -55px; }
-            @keyframes slideInLeft {
-                0% { opacity: 0; width: 0; left: -20px; }
-                100% { opacity: 1; width: 40px; left: -55px; }
-            }
-            @keyframes slideInRight {
-                0% { opacity: 0; width: 0; right: -20px; }
-                100% { opacity: 1; width: 40px; right: -55px; }
-            }
-            .title-side-left::before,
-            .title-side-right::before {
-                width: 22px; height: 22px; font-size: 14px;
-            }
+        .ecg-path-small svg polyline {
+            stroke: #FA5A5A;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            animation: ecgPulse 1.2s ease infinite;
         }
 
-        @media (max-width: 480px) {
-            .title-side-left, .title-side-right { display: none; }
+        @keyframes ecgPulse {
+            0%, 100% { stroke-dashoffset: 0; opacity: 0.8; }
+            50% { stroke-dashoffset: 4; opacity: 1; }
         }
 
-        .header h1 {
+        .main-title {
+            font-family: 'Dancing Script', cursive;
             font-size: 4rem;
             font-weight: 800;
             background: linear-gradient(135deg, #FA8072, #9C27B0);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 12px;
-            font-family: 'Dancing Script', cursive;
             text-shadow: 4px 4px 12px rgba(250, 128, 114, 0.2);
             animation: fadeInUp 0.9s ease-out;
+            margin: 0;
+            padding: 0 10px;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Trái tim nhỏ nhấp nháy giữa các ECG */
+        .heart-beat-icon {
+            font-size: 1.6rem;
+            color: #FA5A5A;
+            animation: heartbeat 1.2s ease infinite;
         }
 
-        .header p {
-            font-family: 'Playfair Display', 'Inter', serif;
-            font-size: 1.25rem;
-            font-weight: 600;
-            font-style: italic;
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 14px 24px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 60px;
-            border: 1px solid rgba(250, 128, 114, 0.3);
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #c74141, #9C27B0, #FA8072);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.9s ease-out 0.1s backwards;
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
-        /* TWO COLUMN LAYOUT */
+        @media (max-width: 768px) {
+            .main-title { font-size: 2.8rem; }
+            .ecg-side { padding: 4px 12px; }
+            .ecg-path-small { width: 60px; height: 24px; }
+            .heart-beat-icon { font-size: 1.2rem; }
+            .title-ecg-row { gap: 12px; }
+        }
+
+        @media (max-width: 580px) {
+            .ecg-side { display: none; } /* Ẩn ECG trên mobile quá nhỏ, chỉ giữ chữ */
+            .main-title { font-size: 2.5rem; }
+        }
+
+        /* Các phần còn lại giữ nguyên */
         .two-column-layout {
             display: flex;
             gap: 40px;
@@ -228,7 +178,6 @@
             min-width: 52%;
         }
 
-        /* CARD AI - giữ nguyên */
         .card-ai {
             flex: 1 1 auto;
             background: rgba(255, 241, 237, 0.92);
@@ -312,7 +261,6 @@
             transform: translateX(8px);
         }
 
-        /* CÁC CARD KHÁC - NỀN TRẮNG MỜ */
         .card {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(4px);
@@ -402,7 +350,6 @@
             transform: translateX(6px);
         }
 
-        /* Màu sắc riêng cho từng card */
         .card-model3d .card-icon { background: linear-gradient(135deg, #FFE0D0, #FFC8B0); color: #E55A3A; }
         .card-model3d .card-footer { color: #E55A3A; }
         .card-flashcard .card-icon { background: linear-gradient(135deg, #FFE0EC, #FFCDE0); color: #D43F7A; }
@@ -434,6 +381,68 @@
             backdrop-filter: blur(8px);
         }
 
+        .site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            height: 70px;
+            border-bottom: 1px solid rgba(250, 128, 114, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .site-brand {
+            font-size: 1.6rem;
+            font-weight: 800;
+            font-family: 'Dancing Script', cursive;
+            background: linear-gradient(135deg, #FA8072, #9C27B0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .site-nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .site-nav a {
+            padding: 8px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 40px;
+            color: #B45A4C;
+            transition: all 0.2s ease;
+        }
+
+        .site-nav a.active {
+            background: linear-gradient(105deg, #FA7A6E, #E86862);
+            color: white;
+            box-shadow: 0 6px 14px rgba(250, 122, 110, 0.35);
+        }
+
+        .site-nav a:hover:not(.active) {
+            background: rgba(250, 128, 114, 0.15);
+            color: #C25A4A;
+        }
+
+        .site-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: #94A3B8;
+            border-top: 1px solid rgba(250, 128, 114, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 1100px) {
             .two-column-layout { gap: 30px; }
             .card-ai { padding: 36px 30px; }
@@ -443,27 +452,28 @@
             .two-column-layout { flex-direction: column; }
             .right-col { flex-direction: row; }
             .card-model3d, .card-flashcard, .card-microscope { flex: 1; }
+            .site-header { padding: 0 20px; }
+            .site-nav a { padding: 6px 12px; font-size: 0.75rem; }
         }
         @media (max-width: 768px) {
             .container { padding: 20px; }
             .header { padding: 20px 20px 30px; }
-            .header h1 { font-size: 2.8rem; }
-            .header p { font-size: 1rem; padding: 10px 18px; }
             .right-col { flex-direction: column; }
             .card-ai h2 { font-size: 1.6rem; }
+            .site-header { flex-direction: column; height: auto; padding: 12px; gap: 8px; }
+            .site-nav { justify-content: center; }
         }
     </style>
 </head>
 <body>
     <header class="site-header">
-        <div class="site-brand">SYNHOC SYSTEM</div>
+        <div class="site-brand">SYNHOC LAB</div>
         <nav class="site-nav">
             <a href="index.html" class="active">TRANG CHỦ</a>
-            <a href="chatbotai.html">CHATBOT AI</a>
+            <a href="chatbot.html">CHATBOT AI</a>
             <a href="flashcard.html">FLASHCARD</a>
             <a href="kinhhienvi.html">KÍNH HIỂN VI</a>
             <a href="model3d.html">MODEL 3D</a>
-            <a href="quantriAI.html">QUẢN TRỊ AI</a>
         </nav>
     </header>
 
@@ -472,18 +482,31 @@
             <div class="logo">
                 <i class="fas fa-dna"></i>
             </div>
-            <div class="title-wrapper">
-                <div class="title-side-left"></div>
-                <h1>SYNHOC LAB</h1>
-                <div class="title-side-right"></div>
+            <!-- Hàng ngang: điện tim đồ trái + chữ SYNHOC LAB + điện tim đồ phải -->
+            <div class="title-ecg-row">
+                <div class="ecg-side">
+                    <i class="fas fa-heart heart-beat-icon"></i>
+                    <div class="ecg-path-small">
+                        <svg viewBox="0 0 80 30" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="0,15 8,15 12,5 22,25 30,12 40,18 50,14 60,20 70,15 80,15" />
+                        </svg>
+                    </div>
+                </div>
+                <h1 class="main-title">SYNHOC LAB</h1>
+                <div class="ecg-side">
+                    <div class="ecg-path-small">
+                        <svg viewBox="0 0 80 30" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="0,15 10,15 14,8 24,22 32,14 42,18 52,14 62,19 72,15 80,15" />
+                        </svg>
+                    </div>
+                    <i class="fas fa-heartbeat heart-beat-icon"></i>
+                </div>
             </div>
-            <p>✨ Hệ thống học tập Sinh học Thông minh ✨</p>
         </div>
 
         <div class="two-column-layout">
             <div class="left-col">
-                <!-- Khối AI -->
-                <div class="card-ai" onclick="navigateTo('chatbotai.html')">
+                <div class="card-ai" onclick="navigateTo('chatbot.html')">
                     <div class="card-ai-icon">
                         <i class="fas fa-robot"></i>
                     </div>
@@ -501,7 +524,6 @@
                     </div>
                 </div>
 
-                <!-- Khối Model 3D -->
                 <div class="card card-model3d" onclick="navigateTo('model3d.html')">
                     <div class="card-icon">
                         <i class="fas fa-cube"></i>
@@ -521,7 +543,6 @@
             </div>
 
             <div class="right-col">
-                <!-- Khối Flashcard -->
                 <div class="card card-flashcard" onclick="navigateTo('flashcard.html')">
                     <div class="card-icon">
                         <i class="fas fa-cards-blank"></i>
@@ -539,7 +560,6 @@
                     </div>
                 </div>
 
-                <!-- Khối Kính hiển vi ảo -->
                 <div class="card card-microscope" onclick="navigateTo('kinhhienvi.html')">
                     <div class="card-icon">
                         <i class="fas fa-microscope"></i>
