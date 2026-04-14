@@ -2,11 +2,11 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KÍNH HIỂN VI ẢO - SYNHOC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>KÍNH HIỂN VI 2D - SYNHOC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,72 +16,362 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #FFFFFF 0%, #FEF1ED 100%);
             min-height: 100vh;
-            color: #1A1F2E;
+            background: linear-gradient(135deg, #FF7E5F 0%, #FEB47B 50%, #FF6B6B 100%);
+            position: relative;
         }
 
-        .phase1 {
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(45deg, rgba(255,140,100,0.2) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,140,100,0.2) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,140,100,0.2) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,140,100,0.2) 75%);
+            background-size: 60px 60px;
+            background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 40%, rgba(255,215,180,0.15) 0%, rgba(255,100,80,0.08) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .site-header {
+            background: rgba(255, 248, 240, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 40px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            min-height: calc(100vh - 140px);
-            padding: 40px 20px;
-            text-align: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,200,180,0.5);
         }
 
-        .phase1 h1 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .site-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'Dancing Script', cursive;
             background: linear-gradient(135deg, #FA8072, #9C27B0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .intro-content {
-            max-width: 800px;
-            background: #FFFFFF;
-            padding: 40px;
-            border-radius: 32px;
-            box-shadow: 0 10px 40px rgba(250, 128, 114, 0.18);
-            border: 1px solid #FCDDD5;
-            margin-bottom: 30px;
+        .site-nav {
+            display: flex;
+            gap: 25px;
         }
 
-        .intro-content h2 {
-            color: #FA8072;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .intro-content h3 {
-            color: #9C27B0;
-            margin: 20px 0 10px 0;
-            font-size: 1.3rem;
-        }
-
-        .intro-content p, .intro-content li {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 10px;
+        .site-nav a {
+            text-decoration: none;
             color: #4A5568;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
-        .intro-content ul {
-            text-align: left;
-            margin-left: 20px;
+        .site-nav a:hover, .site-nav a.active {
+            color: #FA8072;
         }
 
-        .start-button {
-            background: linear-gradient(135deg, #FA8072, #9C27B0);
-            border: none;
-            padding: 16px 40px;
+        .site-footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,248,240,0.9);
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,200,180,0.3);
+            margin-top: 40px;
+            background: rgba(0,0,0,0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .microscope-section {
+            background: rgba(255, 248, 240, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 48px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 200, 180, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: opacity 0.3s ease;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #D4624A, #B8452C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ========== KÍNH HIỂN VI SIÊU ĐẸP - THIẾT KẾ LẠI HOÀN TOÀN ========== */
+        .microscope-2d {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            position: relative;
+            filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3));
+        }
+
+        /* Ống kính - thiết kế cao cấp */
+        .eyepiece {
+            width: 140px;
+            height: 55px;
+            background: linear-gradient(145deg, #4a4d58, #2a2c34);
+            border-radius: 35px 35px 20px 20px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.2);
+            border-bottom: 2px solid #1a1c22;
+        }
+        .eyepiece::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85px;
+            height: 24px;
+            background: #353840;
+            border-radius: 18px 18px 0 0;
+            box-shadow: inset 0 -1px 0 #1a1c22;
+        }
+        .eyepiece::after {
+            content: '🔬';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 22px;
+            opacity: 0.75;
+            filter: drop-shadow(0 1px 1px black);
+        }
+
+        /* Thân kính bóng bẩy như kim loại thật */
+        .body-tube {
+            width: 80px;
+            height: 200px;
+            background: linear-gradient(110deg, #555864, #333640);
+            border-radius: 18px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+            margin-top: -3px;
+        }
+        /* Thêm vân kim loại cho thân kính */
+        .body-tube::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            box-shadow: 0 30px 0 rgba(255,255,255,0.08), 0 60px 0 rgba(255,255,255,0.05), 0 90px 0 rgba(255,255,255,0.06), 0 120px 0 rgba(255,255,255,0.04);
+        }
+
+        /* Đầu xoay - nổi khối rõ nét */
+        .revolving-nosepiece {
+            width: 130px;
+            height: 42px;
+            background: linear-gradient(135deg, #6a6d7a, #464954);
+            border-radius: 35px;
+            margin: -10px auto 0;
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2);
+        }
+
+        /* Các vật kính - đẹp từng chi tiết */
+        .objectives-container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 18px;
+            position: relative;
+            min-height: 160px;
+        }
+
+        .objective-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .objective-lens {
+            width: 78px;
+            height: 115px;
+            background: radial-gradient(ellipse at 30% 28%, #858899, #555864);
+            border-radius: 42px 42px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 14px 22px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,240,0.25);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(210,190,160,0.3);
+        }
+
+        /* Viền vàng cho vật kính khi chọn */
+        .objective-item.selected .objective-lens {
+            border: 3px solid #FFD966;
+            box-shadow: 0 0 0 4px rgba(255,217,102,0.4), 0 0 25px rgba(255,210,80,0.8);
+            transform: scale(1.02);
+            background: radial-gradient(ellipse at 30% 28%, #9497aa, #636674);
+        }
+
+        .objective-lens::before {
+            content: '';
+            position: absolute;
+            top: -14px;
+            width: 44px;
+            height: 16px;
+            background: #9a9dae;
+            border-radius: 22px;
+            box-shadow: inset 0 -1px 0 #6a6d7a;
+        }
+
+        .objective-lens::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 36px;
+            height: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 12px;
+            filter: blur(1.5px);
+        }
+
+        .objective-item:hover .objective-lens {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 22px 30px -8px black;
+        }
+
+        .objective-item.rotating .objective-lens {
+            animation: rotateLensPremium 0.45s ease-in-out;
+        }
+
+        @keyframes rotateLensPremium {
+            0% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(10deg) scale(1.03); }
+            40% { transform: rotate(-7deg) scale(1.02); }
+            60% { transform: rotate(5deg) scale(1.01); }
+            80% { transform: rotate(-2deg) scale(1.01); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        .magnification-badge {
+            background: linear-gradient(145deg, #1a1c22, #0f1014);
+            color: #FFE0A3;
+            padding: 5px 12px;
             border-radius: 40px;
+            font-size: 13px;
+            font-weight: 800;
+            margin-top: 12px;
+            letter-spacing: 0.8px;
+            font-family: monospace;
+            box-shadow: inset 0 1px 0 rgba(255,255,200,0.2), 0 3px 6px black;
+            border: 1px solid rgba(255,220,130,0.3);
+        }
+
+        .lens-icon {
+            font-size: 32px;
+            color: rgba(255,245,210,0.9);
+            margin-bottom: 6px;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
+        }
+
+        /* Bàn kính - thiết kế tinh tế */
+        .stage {
+            width: 245px;
+            height: 22px;
+            background: linear-gradient(145deg, #757885, #4e515d);
+            border-radius: 14px;
+            margin-top: 32px;
+            position: relative;
+            box-shadow: 0 7px 14px rgba(0,0,0,0.25);
+        }
+
+        .stage::before {
+            content: '';
+            position: absolute;
+            bottom: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 56px;
+            background: linear-gradient(125deg, #656874, #434651);
+            border-radius: 22px;
+            box-shadow: inset 0 1px 1px #8f92a0, 0 6px 14px black;
+        }
+
+        /* Đế kính - vững chãi, sang trọng */
+        .base {
+            width: 275px;
+            height: 28px;
+            background: linear-gradient(145deg, #5c5f6c, #3a3c46);
+            border-radius: 32px;
+            margin-top: 50px;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.35), inset 0 1px 0 #808391;
+        }
+        /* Thêm chi tiết chân đế */
+        .base::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 10%;
+            width: 80%;
+            height: 4px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            filter: blur(2px);
+        }
+
+        /* Các nút tương tác giữ nguyên */
+        .interactive-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            margin: 40px 0 30px;
+            flex-wrap: wrap;
+        }
+
+        .mag-btn {
+            background: linear-gradient(145deg, #3B82F6, #2563EB);
+            border: none;
+            padding: 18px 40px;
+            border-radius: 60px;
             color: white;
             font-size: 1.1rem;
             font-weight: 700;
@@ -89,207 +379,221 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .start-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(250, 128, 114, 0.3);
+        .mag-btn i {
+            font-size: 1.3rem;
         }
 
-        .phase2 {
+        .mag-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(59,130,246,0.4);
+        }
+
+        .mag-btn.active {
+            background: linear-gradient(145deg, #10B981, #059669);
+            box-shadow: 0 0 20px rgba(16,185,129,0.5);
+        }
+
+        .view-btn {
+            background: linear-gradient(135deg, #FA8072, #9C27B0);
+            border: none;
+            padding: 18px 55px;
+            border-radius: 60px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin: 20px auto 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .view-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(250,128,114,0.5);
+        }
+
+        /* Phần quan sát giữ nguyên giao diện cũ */
+        .observation-section {
+            background: rgba(255, 248, 240, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 48px;
+            padding: 40px;
+            border: 1px solid rgba(255, 200, 180, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
             display: none;
-            min-height: calc(100vh - 140px);
-            padding: 20px;
         }
 
-        .header {
-            text-align: center;
+        .observation-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .observation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
-            position: relative;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .back-button {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            color: #4A5568;
-            padding: 10px 20px;
+        .back-btn {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(255,200,180,0.5);
+            padding: 10px 25px;
             border-radius: 40px;
             cursor: pointer;
-            font-size: 14px;
             font-weight: 600;
             transition: all 0.3s ease;
         }
 
-        .back-button:hover {
-            background: #F1F5F9;
-            border-color: #3B82F6;
+        .back-btn:hover {
+            background: white;
+            transform: translateX(-3px);
         }
 
-        .simulation-title {
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .objective-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .objective-tab {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            color: #4A5568;
-            padding: 12px 28px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
+        .specimen-info {
+            font-size: 1.2rem;
             font-weight: 700;
+            color: #D4624A;
             text-transform: uppercase;
         }
 
-        .objective-tab.active {
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        .current-magnification {
+            background: rgba(0,0,0,0.2);
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #D4624A;
         }
 
-        .microscope-container {
+        .observation-container {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 40px;
             flex-wrap: wrap;
-            margin-bottom: 30px;
         }
 
-        .control-knob {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .knob-label {
-            font-size: 14px;
-            font-weight: 700;
-            color: #4A5568;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .knob-control {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 20px;
-            padding: 20px;
+        .focus-controls {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .scroll-button {
+        .control-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #D4624A;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .knob-panel {
+            background: rgba(255,255,255,0.5);
+            border-radius: 30px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .knob-btn {
             background: linear-gradient(135deg, #3B82F6, #8B5CF6);
             border: none;
+            width: 60px;
+            height: 50px;
+            border-radius: 20px;
             color: white;
-            width: 54px;
-            height: 48px;
-            border-radius: 16px;
+            font-size: 24px;
             cursor: pointer;
-            font-size: 20px;
-            font-weight: bold;
             transition: all 0.2s ease;
         }
 
-        .scroll-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        .knob-btn:active {
+            transform: scale(0.95);
         }
 
-        .field-of-view {
-            width: 420px;
-            height: 420px;
+        .specimen-view {
+            width: 450px;
+            height: 450px;
             border-radius: 50%;
-            border: 6px solid #FFFFFF;
-            position: relative;
+            border: 8px solid rgba(255,248,240,0.9);
             overflow: hidden;
-            background: #000;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            background: #1a1a2e;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
-        .field-content {
+        .specimen-image {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            overflow: hidden;
+            object-fit: cover;
+            transition: all 0.1s linear;
+        }
+
+        .zoom-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .zoom-slider {
+            writing-mode: bt-lr;
+            -webkit-appearance: slider-vertical;
+            width: 30px;
+            height: 200px;
+        }
+
+        .zoom-value {
+            background: rgba(255,255,255,0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #3B82F6;
         }
 
         .specimen-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        .magnification-display {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .magnification-label {
-            background: #FFFFFF;
-            padding: 16px 32px;
-            border-radius: 40px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #3B82F6;
-            border: 1px solid #E2E8F0;
-            display: inline-block;
-            text-transform: uppercase;
+            border-radius: 50%;
         }
 
         @media (max-width: 768px) {
-            .field-of-view {
+            .specimen-view {
                 width: 300px;
                 height: 300px;
             }
-            .simulation-title {
-                font-size: 1.3rem;
+            .microscope-2d {
+                transform: scale(0.8);
             }
-            .objective-tab {
-                padding: 8px 20px;
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .field-of-view {
-                width: 260px;
-                height: 260px;
-            }
-            .microscope-container {
-                flex-direction: column;
+            .mag-btn {
+                padding: 12px 25px;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
     <header class="site-header">
-        <div class="site-brand">SYNHOC SYSTEM</div>
+        <div class="site-brand">SYNHOC LAB</div>
         <nav class="site-nav">
             <a href="index.html">TRANG CHỦ</a>
             <a href="chatbot.html">CHATBOT AI</a>
@@ -299,70 +603,93 @@
         </nav>
     </header>
 
-    <div class="phase1" id="phase1">
-        <h1><i class="fas fa-microscope"></i> KÍNH HIỂN VI ẢO</h1>
-        <div class="intro-content">
-            <p><strong>KHÁM PHÁ THẾ GIỚI VI MÔ CỦA TẾ BÀO!</strong></p>
-            <h2>TRONG BÀI MÔ PHỎNG NÀY, BẠN SẼ HỌC:</h2>
-            <ul>
-                <li>SỰ KHÁC BIỆT GIỮA CÁC ĐỘ PHÓNG ĐẠI THẤP, TRUNG BÌNH VÀ CAO</li>
-                <li>CÁCH ĐIỀU CHỈNH TIÊU CỰ ĐỂ LÀM RÕ HÌNH ẢNH</li>
-                <li>CẤU TRÚC TẾ BÀO HÀNH TÂY DƯỚI KÍNH HIỂN VI THỰC TẾ</li>
-            </ul>
-            <h3>CÁCH CHUẨN BỊ TIÊU BẢN:</h3>
-            <ul>
-                <li>LẤY MỘT LỚP VỎ HÀNH TÂY MỎNG</li>
-                <li>ĐẶT LÊN LAM KÍNH SẠCH</li>
-                <li>NHỎ MỘT GIỌT THUỐC NHUỘM IODINE ĐỂ LÀM NỔI BẬT CẤU TRÚC TẾ BÀO</li>
-                <li>ĐẬY LAMELLE ĐỂ TRÁNH BỌT KHÍ</li>
-            </ul>
-            <p><strong>TIÊU BẢN ĐÃ SẴN SÀNG ĐỂ QUAN SÁT!</strong></p>
-        </div>
-        <button class="start-button" onclick="startSimulation()">
-            <i class="fas fa-play"></i> BẮT ĐẦU MÔ PHỎNG
-        </button>
-    </div>
-
-    <div class="phase2" id="phase2">
-        <div class="header">
-            <button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i> QUAY LẠI</button>
-            <h1 class="simulation-title">TẾ BÀO HÀNH TÂY DƯỚI KÍNH HIỂN VI</h1>
-            <div class="objective-tabs">
-                <button class="objective-tab active" data-magnification="40" onclick="switchObjective(this, 'low')">VẬT KÍNH 40X</button>
-                <button class="objective-tab" data-magnification="100" onclick="switchObjective(this, 'medium')">VẬT KÍNH 100X</button>
-                <button class="objective-tab" data-magnification="400" onclick="switchObjective(this, 'high')">VẬT KÍNH 400X</button>
+    <div class="main-container">
+        <!-- PHẦN KÍNH HIỂN VI - ĐÃ LÀM LẠI RẤT ĐẸP -->
+        <div id="microscopeSection" class="microscope-section">
+            <h2 class="section-title"><i class="fas fa-microscope"></i> KÍNH HIỂN VI QUANG HỌC</h2>
+            
+            <div class="microscope-2d">
+                <div class="eyepiece"></div>
+                <div class="body-tube"></div>
+                <div class="revolving-nosepiece"></div>
+                
+                <div class="objectives-container">
+                    <div class="objective-item" data-mag="40" data-type="low" onclick="selectObjective(this, 40, 'low')">
+                        <div class="objective-lens">
+                            <i class="fas fa-circle lens-icon"></i>
+                            <span class="magnification-badge">40X</span>
+                        </div>
+                    </div>
+                    <div class="objective-item" data-mag="100" data-type="medium" onclick="selectObjective(this, 100, 'medium')">
+                        <div class="objective-lens">
+                            <i class="fas fa-circle lens-icon"></i>
+                            <span class="magnification-badge">100X</span>
+                        </div>
+                    </div>
+                    <div class="objective-item" data-mag="400" data-type="high" onclick="selectObjective(this, 400, 'high')">
+                        <div class="objective-lens">
+                            <i class="fas fa-circle lens-icon"></i>
+                            <span class="magnification-badge">400X</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stage"></div>
+                <div class="base"></div>
             </div>
+
+            <div class="interactive-buttons">
+                <button class="mag-btn" data-mag="40" onclick="selectMagnification(40, 'low', this)">
+                    <i class="fas fa-dot-circle"></i> VẬT KÍNH 40X
+                </button>
+                <button class="mag-btn" data-mag="100" onclick="selectMagnification(100, 'medium', this)">
+                    <i class="fas fa-dot-circle"></i> VẬT KÍNH 100X
+                </button>
+                <button class="mag-btn" data-mag="400" onclick="selectMagnification(400, 'high', this)">
+                    <i class="fas fa-dot-circle"></i> VẬT KÍNH 400X
+                </button>
+            </div>
+
+            <button class="view-btn" onclick="viewSpecimen()">
+                <i class="fas fa-eye"></i> XEM KẾT QUẢ QUAN SÁT
+            </button>
         </div>
 
-        <div class="microscope-container">
-            <div class="control-knob">
-                <div class="knob-label"><i class="fas fa-adjust"></i> VI CHỈNH</div>
-                <div class="knob-control">
-                    <button class="scroll-button" onmousedown="startFocusing('fine', 'up')" onmouseup="stopFocusing()" onmouseleave="stopFocusing()">▲</button>
-                    <button class="scroll-button" onmousedown="startFocusing('fine', 'down')" onmouseup="stopFocusing()" onmouseleave="stopFocusing()">▼</button>
+        <!-- PHẦN QUAN SÁT GIỮ NGUYÊN -->
+        <div id="observationSection" class="observation-section">
+            <div class="observation-header">
+                <button class="back-btn" onclick="goBackToMicroscope()">
+                    <i class="fas fa-arrow-left"></i> QUAY LẠI KÍNH
+                </button>
+                <div class="specimen-info">
+                    <i class="fas fa-leaf"></i> TẾ BÀO HÀNH TÂY
+                </div>
+                <div class="current-magnification" id="currentMagLabel">
+                    ĐỘ PHÓNG ĐẠI: 40X
                 </div>
             </div>
 
-            <div class="field-of-view">
-                <div class="field-content">
-                    <video id="specimenVideo" class="specimen-video" muted preload="auto">
-                        <source src="videos/res1.mp4" type="video/mp4">
+            <div class="observation-container">
+                <div class="focus-controls">
+                    <div class="control-label"><i class="fas fa-adjust"></i> VI CHỈNH</div>
+                    <div class="knob-panel">
+                        <button class="knob-btn" onmousedown="startFocusing('up')" onmouseup="stopFocusing()" onmouseleave="stopFocusing()">▲</button>
+                        <button class="knob-btn" onmousedown="startFocusing('down')" onmouseup="stopFocusing()" onmouseleave="stopFocusing()">▼</button>
+                    </div>
+                </div>
+
+                <div class="specimen-view">
+                    <video id="specimenVideo" class="specimen-video" controls>
+                        <source id="videoSource" src="videos/res1.mp4" type="video/mp4">
+                        Trình duyệt của bạn không hỗ trợ phát video.
                     </video>
                 </div>
-            </div>
 
-            <div class="control-knob">
-                <div class="knob-label"><i class="fas fa-arrows-alt"></i> THÔ CHỈNH</div>
-                <div class="knob-control">
-                    <button class="scroll-button" onmousedown="startFocusing('coarse', 'up')" onmouseup="stopFocusing()" onmouseleave="stopFocusing()">▲</button>
-                    <button class="scroll-button" onmousedown="startFocusing('coarse', 'down')" onmouseup="stopFocusing()" onmouseleave="stopFocusing()">▼</button>
+                <div class="zoom-controls">
+                    <div class="control-label"><i class="fas fa-search-plus"></i> ZOOM</div>
+                    <input type="range" id="zoomSlider" class="zoom-slider" min="50" max="200" value="100" orient="vertical" oninput="updateZoom(this.value)">
+                    <div class="zoom-value" id="zoomValue">100%</div>
                 </div>
-            </div>
-        </div>
-
-        <div class="magnification-display">
-            <div class="magnification-label" id="magnificationLabel">
-                ĐỘ PHÓNG ĐẠI: 40X
             </div>
         </div>
     </div>
@@ -372,108 +699,178 @@
     </footer>
 
     <script>
-        let currentPhase = 1;
-        let currentMagnification = 40;
-        let currentObjective = 'low';
-        let focusLevel = 50;
-        let isAdjusting = false;
-        let adjustmentType = '';
-        let adjustmentDirection = '';
-        let animationFrame = null;
-        let video;
+        let selectedMagnification = 40;
+        let selectedObjective = 'low';
+        let currentFocus = 50;
+        let focusInterval = null;
+        let currentZoom = 100;
 
-        const videoSources = {
+        const specimenVideos = {
             low: 'videos/res1.mp4',
-            medium: 'videos/res2.mp4', 
+            medium: 'videos/res2.mp4',
             high: 'videos/res3.mp4'
         };
 
-        function startSimulation() {
-            currentPhase = 2;
-            document.getElementById('phase1').style.display = 'none';
-            document.getElementById('phase2').style.display = 'block';
-            video = document.getElementById('specimenVideo');
-            loadVideo(currentObjective);
+        function selectObjective(element, magnification, objectiveType) {
+            element.classList.add('rotating');
+            setTimeout(() => element.classList.remove('rotating'), 500);
+            
+            document.querySelectorAll('.objective-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            document.querySelectorAll('.mag-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.dataset.mag) === magnification) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            selectedMagnification = magnification;
+            selectedObjective = objectiveType;
         }
 
-        function goBack() {
-            currentPhase = 1;
-            document.getElementById('phase2').style.display = 'none';
-            document.getElementById('phase1').style.display = 'flex';
+        function selectMagnification(magnification, objectiveType, btnElement) {
+            const targetObjective = document.querySelector(`.objective-item[data-mag="${magnification}"]`);
+            if (targetObjective) {
+                targetObjective.classList.add('rotating');
+                setTimeout(() => targetObjective.classList.remove('rotating'), 500);
+                
+                document.querySelectorAll('.objective-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                targetObjective.classList.add('selected');
+            }
+            
+            document.querySelectorAll('.mag-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            btnElement.classList.add('active');
+            
+            selectedMagnification = magnification;
+            selectedObjective = objectiveType;
+        }
+
+        function viewSpecimen() {
+            const microSection = document.getElementById('microscopeSection');
+            const obsSection = document.getElementById('observationSection');
+            
+            microSection.style.opacity = '0';
+            setTimeout(() => {
+                microSection.style.display = 'none';
+                obsSection.classList.add('active');
+                obsSection.style.opacity = '0';
+                setTimeout(() => {
+                    obsSection.style.opacity = '1';
+                }, 50);
+            }, 300);
+            
+            updateSpecimenImage();
+            document.getElementById('currentMagLabel').innerHTML = `ĐỘ PHÓNG ĐẠI: ${selectedMagnification}X`;
+            
+            currentFocus = 50;
+            currentZoom = 100;
+            document.getElementById('zoomSlider').value = 100;
+            document.getElementById('zoomValue').textContent = '100%';
+            applyFocusEffect();
+        }
+
+        function updateSpecimenImage() {
+            const videoSource = document.getElementById('videoSource');
+            const video = document.getElementById('specimenVideo');
+            videoSource.src = specimenVideos[selectedObjective];
+            video.load();
+            video.play();
+        }
+
+        function goBackToMicroscope() {
+            const microSection = document.getElementById('microscopeSection');
+            const obsSection = document.getElementById('observationSection');
+            
+            obsSection.style.opacity = '0';
+            setTimeout(() => {
+                obsSection.classList.remove('active');
+                microSection.style.display = 'block';
+                setTimeout(() => {
+                    microSection.style.opacity = '1';
+                }, 50);
+            }, 300);
+            
             stopFocusing();
         }
 
-        function switchObjective(tab, objective) {
-            document.querySelectorAll('.objective-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            currentObjective = objective;
-            currentMagnification = parseInt(tab.dataset.magnification);
-            document.getElementById('magnificationLabel').textContent = `ĐỘ PHÓNG ĐẠI: ${currentMagnification}X`;
-            loadVideo(objective);
-        }
-
-        function loadVideo(objective) {
-            if (video) {
-                video.src = videoSources[objective];
-                video.load();
-                video.currentTime = 0;
-                video.pause();
-            }
-        }
-
-        function startFocusing(type, direction) {
-            if (isAdjusting) return;
-            isAdjusting = true;
-            adjustmentType = type;
-            adjustmentDirection = direction;
-            adjustFocus();
-            if (video && video.paused && adjustmentDirection === 'down') {
-                video.play().catch(e => console.log('Video play error:', e));
-            }
+        function startFocusing(direction) {
+            if (focusInterval) clearInterval(focusInterval);
+            
+            focusInterval = setInterval(() => {
+                if (direction === 'up') {
+                    currentFocus = Math.max(0, currentFocus - 3);
+                } else {
+                    currentFocus = Math.min(100, currentFocus + 3);
+                }
+                applyFocusEffect();
+            }, 30);
         }
 
         function stopFocusing() {
-            isAdjusting = false;
-            if (animationFrame) {
-                cancelAnimationFrame(animationFrame);
-                animationFrame = null;
+            if (focusInterval) {
+                clearInterval(focusInterval);
+                focusInterval = null;
             }
-            if (video && !video.paused) {
-                video.pause();
-            }
-            if (video) video.playbackRate = 1.0;
         }
 
-        function adjustFocus() {
-            if (!isAdjusting || !video) return;
-            const speed = adjustmentType === 'fine' ? 0.5 : 2;
-            const directionMultiplier = adjustmentDirection === 'up' ? 1 : -1;
-            focusLevel += directionMultiplier * speed;
-            focusLevel = Math.max(0, Math.min(100, focusLevel));
-            controlVideoPlayback();
-            animationFrame = requestAnimationFrame(adjustFocus);
+        function applyFocusEffect() {
+            const video = document.getElementById('specimenVideo');
+            const blurAmount = Math.abs(currentFocus - 50) / 20;
+            video.style.filter = `blur(${blurAmount}px) brightness(${1 - blurAmount * 0.1})`;
         }
 
-        function controlVideoPlayback() {
-            if (!video) return;
-            const videoDuration = video.duration || 14;
-            const step = adjustmentType === 'fine' ? 0.05 : 0.2;
-            if (adjustmentDirection === 'down') {
-                video.playbackRate = adjustmentType === 'fine' ? 0.25 : 1.0;
-                if (video.paused) video.play().catch(e => console.log(e));
-                if (video.currentTime >= videoDuration) {
-                    video.pause();
-                    video.currentTime = videoDuration;
-                }
-            } else if (adjustmentDirection === 'up') {
-                if (!video.paused) video.pause();
-                let newTime = video.currentTime - step;
-                if (newTime < 0) {
-                    newTime = 0;
-                    stopFocusing();
-                }
-                video.currentTime = newTime;
+        function updateZoom(value) {
+            currentZoom = parseInt(value);
+            document.getElementById('zoomValue').textContent = currentZoom + '%';
+            const video = document.getElementById('specimenVideo');
+            video.style.transform = `scale(${currentZoom / 100})`;
+            video.style.transformOrigin = 'center center';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const defaultObjective = document.querySelector('.objective-item[data-mag="40"]');
+            const defaultBtn = document.querySelector('.mag-btn[data-mag="40"]');
+            if (defaultObjective) {
+                defaultObjective.classList.add('selected');
             }
+            if (defaultBtn) {
+                defaultBtn.classList.add('active');
+            }
+            
+            const videoSource = document.getElementById('videoSource');
+            const video = document.getElementById('specimenVideo');
+            if (videoSource && video) {
+                videoSource.src = specimenVideos.low;
+                video.load();
+            }
+        });
+
+        // VIDEO FUNCTIONS
+        function loadVideo(videoSource, buttonElement) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videoSourceElement = document.getElementById('videoSource');
+            
+            // Update button styles
+            document.querySelectorAll('.video-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+            
+            // Load new video
+            videoSourceElement.src = videoSource;
+            videoPlayer.load();
+            videoPlayer.play();
+            
+            // Update video info
+            const videoNum = videoSource.match(/res(\d+)/)[1];
+            document.getElementById('videoInfo').textContent = `Đang phát: Video ${videoNum} - Giáo dục Sinh Học`;
         }
     </script>
 </body>
