@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Vitax AI - Ombre Karo | Làm mới thông minh</title>
+    <title>Vitax AI - Trợ lý y tế thông minh | SYNHOC LAB</title>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -12,6 +12,7 @@
     <!-- Font Awesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -45,6 +46,7 @@
         .site-brand {
             font-size: 1.7rem;
             font-weight: 800;
+            font-family: 'Dancing Script', cursive;
             background: linear-gradient(130deg, #E86F5E, #D96C6A);
             -webkit-background-clip: text;
             background-clip: text;
@@ -132,7 +134,6 @@
             color: #CC7A6A;
         }
 
-        /* NÚT BÁO LỖI - chữ đậm */
         .action-btn {
             background: linear-gradient(115deg, #ffede7, #ffe4db);
             border: 1px solid #ffcfc2;
@@ -190,7 +191,6 @@
         }
         .status-dot.online { background: #10B981; box-shadow: 0 0 0 2px #d1fae5; }
 
-        /* VÙNG CHAT - NỀN KARO OMBRE */
         .chat-messages {
             flex: 1;
             max-height: 520px;
@@ -323,7 +323,6 @@
             30%{ transform: translateY(-6px); background: #FA7A6E;}
         }
 
-        /* SUGGESTIONS */
         .suggestions-container {
             padding: 12px 24px 20px;
             background: #FFF9F6;
@@ -499,6 +498,7 @@
             .chat-header { padding: 16px; }
             .message-content { max-width: 88%; font-size: 0.85rem; padding: 12px 16px; }
             .site-header { padding: 0 16px; }
+            .site-nav a { padding: 6px 12px; font-size: 0.7rem; }
             .suggestion-chip { padding: 6px 16px; font-size: 0.7rem; }
             .chat-messages { background-size: 20px 20px; }
         }
@@ -507,9 +507,13 @@
 <body>
 
 <header class="site-header">
-    <div class="site-brand">VITAX.AI</div>
+    <div class="site-brand">SYNHOC LAB</div>
     <nav class="site-nav">
-        <a href="chatbotai.html" class="active">CHATBOT</a>
+        <a href="index.html">TRANG CHỦ</a>
+        <a href="chatbot.html" class="active">CHATBOT AI</a>
+        <a href="flashcard.html">FLASHCARD</a>
+        <a href="kinhhienvi.html">KÍNH HIỂN VI</a>
+        <a href="model3d.html">MODEL 3D</a>
     </nav>
 </header>
 
@@ -529,7 +533,6 @@
 
     <div class="status-bar">
         <div><span class="status-dot online" id="statusDot"></span><span id="statusText">Khởi tạo kết nối...</span></div>
-        <!-- Nút làm mới chỉ xóa tin nhắn, không reload trang -->
         <button class="action-btn" id="clearChatBtn" style="background: transparent; padding: 0;"><i class="fas fa-trash-alt"></i> Làm mới</button>
     </div>
 
@@ -584,7 +587,7 @@
     </div>
 </div>
 
-<footer class="footer">© 2026 VITAX.AI · Hệ thống y tế thông minh · Dữ liệu tham khảo chuyên sâu</footer>
+<footer class="footer">© 2026 SYNHOC LAB · Hệ thống y tế thông minh · Dữ liệu tham khảo chuyên sâu</footer>
 
 <script>
     const firebaseConfig = {
@@ -696,14 +699,11 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    // HÀM LÀM MỚI THÔNG MINH: Xóa hết tin nhắn, chỉ giữ lại lời chào đầu tiên
     function clearChatHistory() {
         const container = document.getElementById('chatMessages');
-        // Xóa tất cả các tin nhắn cũ
         while (container.firstChild) {
             container.removeChild(container.firstChild);
         }
-        // Thêm lại tin nhắn chào mừng
         const welcomeDiv = document.createElement('div');
         welcomeDiv.className = 'message bot';
         welcomeDiv.innerHTML = `
@@ -714,11 +714,8 @@
             </div>
         `;
         container.appendChild(welcomeDiv);
-        // Ẩn cảnh báo nếu đang hiện
         document.getElementById('warningMessage').style.display = 'none';
-        // Xóa nội dung input nếu còn sót
         document.getElementById('userInput').value = '';
-        // Focus vào input
         document.getElementById('userInput').focus();
     }
 
@@ -774,7 +771,6 @@
             if (e.key === 'Enter') { e.preventDefault(); sendBtn.click(); }
         });
         
-        // Gắn sự kiện làm mới (xóa lịch sử chat)
         clearBtn.addEventListener('click', clearChatHistory);
         
         inputField.focus();
