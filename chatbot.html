@@ -191,7 +191,9 @@
         }
         .status-dot.online { background: #10B981; box-shadow: 0 0 0 2px #d1fae5; }
 
+        /* === KHU VỰC CHAT MESSAGES - CARO ĐẬM VỪA + OMBRE TỪ TRÊN XUỐNG + ICON TRANG TRÍ === */
         .chat-messages {
+            position: relative;
             flex: 1;
             max-height: 520px;
             min-height: 460px;
@@ -204,12 +206,34 @@
                 rgba(255, 235, 225, 0.85) 0%,
                 rgba(255, 245, 240, 0.92) 40%,
                 rgba(255, 250, 245, 0.98) 100%);
+            /* NỀN CARO: độ đậm vừa phải (0.4) kết hợp với ombre fade từ trên xuống */
             background-image: 
-                linear-gradient(to right, rgba(250, 128, 114, 0.28) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(250, 128, 114, 0.28) 1px, transparent 1px);
-            background-size: 28px 28px;
-            background-blend-mode: overlay;
+                linear-gradient(to right, rgba(250, 128, 114, 0.4) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(250, 128, 114, 0.4) 1px, transparent 1px),
+                /* Lớp ombre làm mờ dần viền về phía dưới */
+                linear-gradient(to bottom, rgba(255,245,240,0) 0%, rgba(255,225,215,0.65) 100%);
+            background-size: 28px 28px, 28px 28px, 100% 100%;
+            background-blend-mode: overlay, overlay, normal;
+            background-repeat: repeat, repeat, no-repeat;
             box-shadow: inset 0 0 20px rgba(250, 128, 114, 0.08);
+        }
+        
+        /* Lớp nội dung chat nằm trên icon trang trí */
+        .message {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Các icon nền (trái tim, kim tiêm, ...) ngẫu nhiên, đảm bảo khoảng cách tối thiểu 7 ô lưới (≈196px) */
+        .bg-charm-icon {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            font-size: 0;
+            transition: all 0.2s ease;
+            color: rgba(232, 104, 98, 0.32);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            will-change: transform;
         }
         
         .chat-messages::-webkit-scrollbar {
@@ -270,6 +294,9 @@
             line-height: 1.55;
             font-weight: 450;
             backdrop-filter: blur(1px);
+            background: rgba(255, 255, 255, 0.96);
+            z-index: 2;
+            position: relative;
         }
 
         .user .message-content {
@@ -306,6 +333,8 @@
             margin-left: 58px;
             margin-top: 6px;
             backdrop-filter: blur(4px);
+            position: relative;
+            z-index: 2;
         }
 
         .typing-dots span {
@@ -327,6 +356,8 @@
             padding: 12px 24px 20px;
             background: #FFF9F6;
             border-top: 1px solid #ffe0d4;
+            position: relative;
+            z-index: 2;
         }
 
         .suggestions-title {
@@ -378,6 +409,8 @@
             align-items: center;
             gap: 8px;
             border-top: 1px solid #ffddcf;
+            position: relative;
+            z-index: 2;
         }
 
         .chat-input-container {
@@ -387,6 +420,8 @@
             display: flex;
             gap: 14px;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
 
         .input-wrapper {
@@ -500,7 +535,7 @@
             .site-header { padding: 0 16px; }
             .site-nav a { padding: 6px 12px; font-size: 0.7rem; }
             .suggestion-chip { padding: 6px 16px; font-size: 0.7rem; }
-            .chat-messages { background-size: 20px 20px; }
+            .chat-messages { background-size: 20px 20px, 20px 20px, 100% 100%; }
         }
     </style>
 </head>
@@ -590,6 +625,7 @@
 <footer class="footer">© 2026 SYNHOC LAB · Hệ thống y tế thông minh · Dữ liệu tham khảo chuyên sâu</footer>
 
 <script>
+    // Firebase + core logic
     const firebaseConfig = {
         apiKey: "AIzaSyAF72F0Klk37x-gbmtJmlMXDStg7ZcUSo8",
         authDomain: "quany-75b24.firebaseapp.com",
@@ -701,9 +737,8 @@
 
     function clearChatHistory() {
         const container = document.getElementById('chatMessages');
-        while (container.firstChild) {
-            container.removeChild(container.firstChild);
-        }
+        const messages = container.querySelectorAll('.message');
+        messages.forEach(msg => msg.remove());
         const welcomeDiv = document.createElement('div');
         welcomeDiv.className = 'message bot';
         welcomeDiv.innerHTML = `
@@ -756,6 +791,114 @@
         }
     }
 
+    // ================== TRANG TRÍ ICON NỀN: ƯU TIÊN PHÂN BỔ Ở PHẦN TRÊN, KHOẢNG CÁCH TỐI THIỂU 7 Ô (196px) ==================
+    const medicalIcons = [
+        "fa-heart", "fa-syringe", "fa-capsules", "fa-stethoscope", "fa-lungs", 
+        "fa-brain", "fa-band-aid", "fa-thermometer", "fa-virus", "fa-microscope",
+        "fa-heartbeat", "fa-eye", "fa-tooth", "fa-bone", "fa-flask", "fa-hospital"
+    ];
+    
+    let iconResizeTimer;
+    
+    function generateRandomIcons() {
+        const container = document.getElementById('chatMessages');
+        if (!container) return;
+        // Xóa icon cũ
+        const oldIcons = container.querySelectorAll('.bg-charm-icon');
+        oldIcons.forEach(icon => icon.remove());
+        
+        const rect = container.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        if (width === 0 || height === 0) return;
+        
+        // Tổng số icon: 15 (tăng nhẹ để có thêm icon ở phía trên)
+        const iconCount = 15;
+        // Khoảng cách tối thiểu: 7 ô lưới = 7 * 28 = 196px
+        const minDistancePx = 196;
+        
+        const positions = []; // lưu các {x, y} tọa độ thực tế (px)
+        
+        for (let i = 0; i < iconCount; i++) {
+            let attempts = 0;
+            let placed = false;
+            let posX = 0, posY = 0;
+            
+            while (!placed && attempts < 60) {
+                // Tạo vị trí ngẫu nhiên, nhưng ưu tiên vùng phía trên (70% khả năng nằm ở nửa trên của container)
+                let topPercent;
+                const useTop = Math.random() < 0.7; // 70% số icon sẽ ở nửa trên (0-50% chiều cao)
+                if (useTop) {
+                    topPercent = Math.random() * 50; // 0% - 50% (phần trên)
+                } else {
+                    topPercent = 50 + Math.random() * 50; // 50% - 100% (phần dưới)
+                }
+                const leftPercent = Math.random() * 100;
+                const candidateX = (leftPercent / 100) * width;
+                const candidateY = (topPercent / 100) * height;
+                
+                // Kiểm tra khoảng cách với các icon đã có
+                let tooClose = false;
+                for (let p of positions) {
+                    const dx = p.x - candidateX;
+                    const dy = p.y - candidateY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < minDistancePx) {
+                        tooClose = true;
+                        break;
+                    }
+                }
+                
+                if (!tooClose) {
+                    posX = candidateX;
+                    posY = candidateY;
+                    placed = true;
+                    positions.push({ x: posX, y: posY });
+                }
+                attempts++;
+            }
+            // Nếu sau nhiều lần vẫn không đạt khoảng cách, vẫn chấp nhận vị trí cuối cùng (tránh treo)
+            if (!placed) {
+                // fallback: random toàn bộ vùng
+                const leftPercent = Math.random() * 100;
+                const topPercent = Math.random() * 100;
+                posX = (leftPercent / 100) * width;
+                posY = (topPercent / 100) * height;
+                positions.push({ x: posX, y: posY });
+            }
+            
+            // Chọn icon ngẫu nhiên
+            const randomIconClass = medicalIcons[Math.floor(Math.random() * medicalIcons.length)];
+            const size = Math.floor(Math.random() * (32 - 18 + 1) + 18);
+            const opacity = 0.22 + Math.random() * 0.18;
+            const rotate = Math.floor(Math.random() * 360);
+            const colors = ["#E86862", "#FA7A6E", "#D96050", "#C25444", "#E28B7A", "#F08A6E"];
+            const colorPick = colors[Math.floor(Math.random() * colors.length)];
+            
+            const iconDiv = document.createElement('i');
+            iconDiv.className = `fas ${randomIconClass} bg-charm-icon`;
+            iconDiv.style.position = 'absolute';
+            iconDiv.style.left = `${posX}px`;
+            iconDiv.style.top = `${posY}px`;
+            iconDiv.style.fontSize = `${size}px`;
+            iconDiv.style.opacity = opacity;
+            iconDiv.style.color = colorPick;
+            iconDiv.style.transform = `rotate(${rotate}deg)`;
+            iconDiv.style.filter = 'drop-shadow(0 2px 3px rgba(0,0,0,0.02))';
+            iconDiv.style.pointerEvents = 'none';
+            iconDiv.style.zIndex = '0';
+            
+            container.appendChild(iconDiv);
+        }
+    }
+    
+    function debouncedResizeIcons() {
+        if (iconResizeTimer) clearTimeout(iconResizeTimer);
+        iconResizeTimer = setTimeout(() => {
+            generateRandomIcons();
+        }, 200);
+    }
+    
     window.onload = () => {
         loadMedicalKnowledge();
         const sendBtn = document.getElementById('sendButton');
@@ -772,8 +915,19 @@
         });
         
         clearBtn.addEventListener('click', clearChatHistory);
-        
         inputField.focus();
+        
+        setTimeout(() => {
+            generateRandomIcons();
+        }, 120);
+        
+        window.addEventListener('resize', debouncedResizeIcons);
+        
+        const chatContainer = document.getElementById('chatMessages');
+        const resizeObserver = new ResizeObserver(() => {
+            generateRandomIcons();
+        });
+        if (chatContainer) resizeObserver.observe(chatContainer);
     };
 </script>
 </body>
