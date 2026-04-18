@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SYNHOC AI - Trợ lý học tập sinh học | SYNHOC LAB</title>
+    <title>Vitax AI - Trợ lý y tế thông minh | SYNHOC LAB</title>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -555,10 +555,10 @@
 <div class="chat-container">
     <div class="chat-header">
         <div class="header-left">
-            <div class="header-icon"><i class="fas fa-microscope"></i></div>
+            <div class="header-icon"><i class="fas fa-stethoscope"></i></div>
             <div class="header-title">
-                <h1>SYNHOC AI</h1>
-                <p><i class="fas fa-circle" style="font-size: 8px; color: #10B981;"></i> Trợ lý học tập sinh học · Hỗ trợ 24/7</p>
+                <h1>VITAX.AI</h1>
+                <p><i class="fas fa-circle" style="font-size: 8px; color: #10B981;"></i> Bác sĩ AI · Tư vấn thông minh 24/7</p>
             </div>
         </div>
         <div class="header-actions">
@@ -575,8 +575,8 @@
         <div class="message bot" id="welcomeMessage">
             <div class="message-avatar"><i class="fas fa-robot"></i></div>
             <div class="message-content">
-                Xin chào! Tôi là SYNHOC AI - trợ lý học tập sinh học thông minh.<br><br>
-                Hãy hỏi tôi về các chương: trao đổi chất, chu kỳ tế bào, phân bào, di truyền, hoặc bất kỳ khái niệm sinh học nào bạn muốn học!
+                Xin chào! Tôi là trợ lý y tế Vitax AI.<br><br>
+                Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn tìm ra bệnh có khả năng nhất và hướng dẫn chăm sóc phù hợp.
             </div>
         </div>
     </div>
@@ -586,17 +586,17 @@
     <div class="suggestions-container">
         <div class="suggestions-title"><i class="fas fa-lightbulb"></i> Gợi ý câu hỏi nhanh</div>
         <div class="suggestions-grid">
-            <div class="suggestion-chip" onclick="setSuggestion('Chu kỳ tế bào là gì?')"><i class="fas fa-circle-notch"></i> Chu kỳ tế bào</div>
-            <div class="suggestion-chip" onclick="setSuggestion('Nguyên phân diễn ra như thế nào?')"><i class="fas fa-microscope"></i> Nguyên phân</div>
-            <div class="suggestion-chip" onclick="setSuggestion('Giảm phân là gì?')"><i class="fas fa-dna"></i> Giảm phân</div>
-            <div class="suggestion-chip" onclick="setSuggestion('ATP có chức năng gì?')"><i class="fas fa-bolt"></i> ATP - Năng lượng</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Triệu chứng cảm cúm là gì?')"><i class="fas fa-thermometer"></i> Triệu chứng cảm cúm</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Cách chữa đau đầu tại nhà')"><i class="fas fa-head-side-brain"></i> Chữa đau đầu</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Dấu hiệu sốt xuất huyết')"><i class="fas fa-biohazard"></i> Sốt xuất huyết</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Viêm họng nên làm gì?')"><i class="fas fa-lungs"></i> Viêm họng</div>
         </div>
     </div>
 
-    <div id="warningMessage" class="warning-message"><i class="fas fa-book"></i> Thông tin này được lấy từ chương trình SYNHOCLAB. Hãy kiểm tra sách giáo khoa để hiểu rõ hơn!</div>
+    <div id="warningMessage" class="warning-message"><i class="fas fa-exclamation-triangle"></i> Thông tin chỉ mang tính tham khảo. Vui lòng đến cơ sở y tế để được khám chính xác.</div>
 
     <div class="chat-input-container">
-        <div class="input-wrapper"><input type="text" id="userInput" placeholder="Nhập khái niệm sinh học... (ví dụ: chu kỳ tế bào, nguyên phân, ATP)"></div>
+        <div class="input-wrapper"><input type="text" id="userInput" placeholder="Nhập triệu chứng hoặc câu hỏi... (ví dụ: đau họng, sốt, mệt mỏi)"></div>
         <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
     </div>
 </div>
@@ -637,77 +637,66 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let allBiologyTopics = [];
+    let allDiseases = [];
 
-    async function loadBiologyKnowledge() {
+    async function loadMedicalKnowledge() {
         try {
-            document.getElementById('statusText').innerHTML = 'Đang đồng bộ dữ liệu sinh học...';
-            const response = await fetch('data.json');
-            const data = await response.json();
-            allBiologyTopics = data.models || [];
-            if (allBiologyTopics.length === 0) loadDefaultBiologyData();
-            document.getElementById('statusText').innerHTML = 'Sẵn sàng hỗ trợ học tập';
+            document.getElementById('statusText').innerHTML = 'Đang đồng bộ dữ liệu...';
+            const snapshot = await db.collection('medical_knowledge').get();
+            allDiseases = [];
+            snapshot.forEach(doc => { allDiseases.push({ id: doc.id, ...doc.data() }); });
+            if (allDiseases.length === 0) loadDemoData();
+            document.getElementById('statusText').innerHTML = 'Sẵn sàng tư vấn';
             document.getElementById('statusDot').className = 'status-dot online';
         } catch (error) {
-            console.error('Error loading biology data:', error);
-            loadDefaultBiologyData();
+            loadDemoData();
             document.getElementById('statusText').innerHTML = 'Chế độ ngoại tuyến (dữ liệu mẫu)';
         }
     }
 
-    function loadDefaultBiologyData() {
-        allBiologyTopics = [
-            { name: "Chu kỳ tế bào", chapter: "Chu kì tế bào và phân bào", feature: "Là khoảng thời gian từ khi tế bào được sinh ra, lớn lên và phân chia thành hai tế bào con.", funFact: "Chu kỳ tế bào gồm kỳ trung gian và quá trình phân bào", items: [], grade: "10" },
-            { name: "Nguyên phân", chapter: "Chu kì tế bào và phân bào", feature: "Là một trong các kiểu phân chia của tế bào nhân thực", funFact: "Tại đây có điểm kiểm soát thoi phân bào", items: [], grade: "10" },
-            { name: "Giảm phân", chapter: "Chu kì tế bào và phân bào", feature: "Là hình thức phân chia của các tế bào mầm sinh dục", funFact: "Giảm phân gồm hai lần phân bào liên tiếp", items: [], grade: "10" },
-            { name: "ATP", chapter: "Chuyển hóa năng lượng trong tế bào", feature: "Là adenosine triphosphate có chức năng dự trữ năng lượng", funFact: "ATP cung cấp năng lượng ngắn hạn cho các hoạt động sống của tế bào", items: [], grade: "10" }
+    function loadDemoData() {
+        allDiseases = [
+            { diseaseName: "Cảm cúm", symptoms: "Sốt cao 38-40 độ C, đau đầu, đau họng, chảy nước mũi, đau nhức cơ thể", treatment: "Nghỉ ngơi, uống nhiều nước, thuốc hạ sốt Paracetamol", prevention: "Rửa tay, đeo khẩu trang, tiêm vắc-xin hàng năm", diseaseLevel: "common", category: "bệnh truyền nhiễm" },
+            { diseaseName: "Sốt xuất huyết", symptoms: "Sốt cao đột ngột 39-40 độ C, đau đầu dữ dội, đau sau hốc mắt, đau cơ khớp", treatment: "Uống nhiều Oresol, Paracetamol, tuyệt đối không dùng Aspirin", prevention: "Diệt muỗi vằn, ngủ mùng, loại bỏ nước đọng", diseaseLevel: "dangerous", category: "bệnh truyền nhiễm" },
+            { diseaseName: "Đau đầu căng thẳng", symptoms: "Đau âm ỉ hai bên đầu, cảm giác bị siết chặt", treatment: "Nghỉ ngơi, massage, chườm ấm, uống đủ nước", prevention: "Ngủ đủ giấc, tránh stress, tập thể dục đều đặn", diseaseLevel: "common", category: "bệnh nội khoa" },
+            { diseaseName: "Viêm họng", symptoms: "Đau rát họng, khó nuốt, sốt nhẹ, ho khan", treatment: "Súc miệng nước muối, uống nước ấm, thuốc kháng viêm", prevention: "Giữ ấm cổ, tránh nước đá, vệ sinh răng miệng", diseaseLevel: "common", category: "bệnh nội khoa" },
+            { diseaseName: "Covid-19", symptoms: "Sốt, ho khan, mệt mỏi, mất vị giác hoặc khứu giác, khó thở", treatment: "Cách ly, hạ sốt, bù nước, theo dõi oxy", prevention: "Tiêm vắc-xin, đeo khẩu trang, rửa tay", diseaseLevel: "dangerous", category: "bệnh truyền nhiễm" }
         ];
     }
 
-    function findBestBiologyMatch(query) {
+    function findBestMatch(query) {
         const q = query.toLowerCase();
         let best = null, bestScore = 0;
-        for (const topic of allBiologyTopics) {
+        for (const d of allDiseases) {
             let score = 0;
-            const name = topic.name.toLowerCase();
-            const feature = (topic.feature || '').toLowerCase();
-            const chapter = (topic.chapter || '').toLowerCase();
-            
+            const name = d.diseaseName.toLowerCase();
+            const symp = (d.symptoms || '').toLowerCase();
             if (name.includes(q)) score += 100;
             else if (q.includes(name)) score += 70;
-            
             const words = q.split(/\s+/);
             for (let w of words) {
                 if (w.length < 2) continue;
                 if (name.includes(w)) score += 30;
-                if (feature.includes(w)) score += 22;
-                if (chapter.includes(w)) score += 15;
+                if (symp.includes(w)) score += 22;
             }
-            
-            if (score > bestScore) { bestScore = score; best = topic; }
+            if (score > bestScore) { bestScore = score; best = d; }
         }
         return best;
     }
 
-    function formatBiologyResponse(topic) {
-        let response = `📚 **${topic.name}**\n\n`;
-        response += `📖 Chương: ${topic.chapter}\n\n`;
-        response += `📝 Định nghĩa:\n${topic.feature}\n\n`;
-        
-        if (topic.items && topic.items.length > 0) {
-            response += `🔍 Chi tiết:\n`;
-            topic.items.forEach((item, idx) => {
-                response += `   ${idx + 1}. **${item.name}**: ${item.content}\n`;
-            });
-            response += `\n`;
-        }
-        
-        if (topic.funFact) {
-            response += `💡 Thú vị để biết:\n${topic.funFact}\n\n`;
-        }
-        
-        response += `📚 Lớp: ${topic.grade}\n\n`;
-        response += `🔗 Hãy học thêm các chủ đề liên quan hoặc xem các hình ảnh 3D trên trang chính!`;
+    function formatNaturalResponse(disease) {
+        let levelDesc = "";
+        if (disease.diseaseLevel === 'dangerous') levelDesc = "⚠️ Mức độ nguy hiểm: Cần đi khám bác sĩ ngay.";
+        else if (disease.diseaseLevel === 'common') levelDesc = "🟢 Mức độ thường gặp: Có thể tự chăm sóc tại nhà và theo dõi.";
+        else levelDesc = "🔵 Mức độ hiếm gặp: Nên thăm khám để được chẩn đoán chính xác.";
+
+        let response = `🏥 **${disease.diseaseName}**\n\n`;
+        response += `${levelDesc}\n\n`;
+        response += `📋 Triệu chứng chi tiết:\n${disease.symptoms}\n\n`;
+        response += `💊 Hướng dẫn chăm sóc và điều trị:\n${disease.treatment}\n\n`;
+        response += `🛡️ Phòng ngừa:\n${disease.prevention}\n\n`;
+        response += `📂 Nhóm bệnh: ${disease.category || 'Khác'}\n\n`;
+        response += `🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và điều trị kịp thời.`;
         return response;
     }
 
@@ -718,13 +707,13 @@
         document.getElementById('warningMessage').style.display = 'flex';
         
         setTimeout(() => {
-            const matched = findBestBiologyMatch(userMessage);
+            const matched = findBestMatch(userMessage);
             showTyping(false);
             if (!matched) {
-                addMessage("Xin lỗi, tôi chưa có thông tin về chủ đề này trong cơ sở dữ liệu SYNHOCLAB. Bạn có thể hỏi về các chương khác như: chu kỳ tế bào, nguyên phân, giảm phân, ATP, hoặc trao đổi chất qua màng nhân?", 'bot');
+                addMessage("Rất tiếc, tôi chưa có đủ thông tin về triệu chứng này. Bạn hãy mô tả chi tiết hơn (ví dụ: sốt bao nhiêu độ, đau vùng nào) hoặc tham khảo ý kiến bác sĩ nhé.", 'bot');
                 return;
             }
-            const answer = formatBiologyResponse(matched);
+            const answer = formatNaturalResponse(matched);
             addMessage(answer, 'bot');
         }, 700);
     }
@@ -755,8 +744,8 @@
         welcomeDiv.innerHTML = `
             <div class="message-avatar"><i class="fas fa-robot"></i></div>
             <div class="message-content">
-                Xin chào! Tôi là SYNHOC AI - trợ lý học tập sinh học thông minh.<br><br>
-                Hãy hỏi tôi về các chương: trao đổi chất, chu kỳ tế bào, phân bào, di truyền, hoặc bất kỳ khái niệm sinh học nào bạn muốn học!
+                Xin chào! Tôi là trợ lý y tế Vitax AI.<br><br>
+                Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn tìm ra bệnh có khả năng nhất và hướng dẫn chăm sóc phù hợp.
             </div>
         `;
         container.appendChild(welcomeDiv);
@@ -803,10 +792,10 @@
     }
 
     // ================== TRANG TRÍ ICON NỀN: ƯU TIÊN PHÂN BỔ Ở PHẦN TRÊN, KHOẢNG CÁCH TỐI THIỂU 7 Ô (196px) ==================
-    const biologyIcons = [
-        "fa-microscope", "fa-dna", "fa-flask", "fa-flask-vial", "fa-virus", 
-        "fa-bacteria", "fa-circle", "fa-circle-nodes", "fa-radiation", "fa-droplet",
-        "fa-leaf", "fa-heart", "fa-lungs", "fa-brain", "fa-bone", "fa-test-tube"
+    const medicalIcons = [
+        "fa-heart", "fa-syringe", "fa-capsules", "fa-stethoscope", "fa-lungs", 
+        "fa-brain", "fa-band-aid", "fa-thermometer", "fa-virus", "fa-microscope",
+        "fa-heartbeat", "fa-eye", "fa-tooth", "fa-bone", "fa-flask", "fa-hospital"
     ];
     
     let iconResizeTimer;
@@ -879,7 +868,7 @@
             }
             
             // Chọn icon ngẫu nhiên
-            const randomIconClass = biologyIcons[Math.floor(Math.random() * biologyIcons.length)];
+            const randomIconClass = medicalIcons[Math.floor(Math.random() * medicalIcons.length)];
             const size = Math.floor(Math.random() * (32 - 18 + 1) + 18);
             const opacity = 0.22 + Math.random() * 0.18;
             const rotate = Math.floor(Math.random() * 360);
@@ -911,7 +900,7 @@
     }
     
     window.onload = () => {
-        loadBiologyKnowledge();
+        loadMedicalKnowledge();
         const sendBtn = document.getElementById('sendButton');
         const inputField = document.getElementById('userInput');
         const clearBtn = document.getElementById('clearChatBtn');
