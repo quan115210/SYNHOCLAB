@@ -23,32 +23,16 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: 
-                linear-gradient(180deg, 
-                    rgba(255, 255, 255, 0.7) 0%, 
-                    rgba(255, 255, 255, 0.3) 30%,
-                    rgba(255, 255, 255, 0.05) 70%,
-                    transparent 100%),
-                repeating-linear-gradient(90deg, 
-                    rgba(250, 128, 114, 0.35) 0px, 
-                    rgba(250, 128, 114, 0.35) 1px,
-                    transparent 1px,
-                    transparent 40px),
-                repeating-linear-gradient(0deg, 
-                    rgba(250, 128, 114, 0.35) 0px, 
-                    rgba(250, 128, 114, 0.35) 1px,
-                    transparent 1px,
-                    transparent 40px),
-                linear-gradient(135deg, #FFF5F2 0%, #FFE8E0 50%, #FFDDD0 100%);
+            background: linear-gradient(145deg, #fff2ed 0%, #fde3db 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
         .site-header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(8px);
-            padding: 0 40px;
+            background: rgba(255, 245, 240, 0.92);
+            backdrop-filter: blur(16px);
+            padding: 0 32px;
             height: 70px;
             display: flex;
             align-items: center;
@@ -60,10 +44,10 @@
         }
 
         .site-brand {
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             font-weight: 800;
             font-family: 'Dancing Script', cursive;
-            background: linear-gradient(135deg, #FA8072, #9C27B0);
+            background: linear-gradient(130deg, #E86F5E, #D96C6A);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -71,15 +55,14 @@
 
         .site-nav {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .site-nav a {
-            padding: 8px 20px;
+            padding: 8px 24px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             border-radius: 40px;
             color: #B45A4C;
             transition: all 0.2s ease;
@@ -94,16 +77,6 @@
         .site-nav a:hover:not(.active) {
             background: rgba(250, 128, 114, 0.15);
             color: #C25A4A;
-        }
-
-        @media (max-width: 900px) {
-            .site-header { padding: 0 20px; }
-            .site-nav a { padding: 6px 12px; font-size: 0.75rem; }
-        }
-
-        @media (max-width: 768px) {
-            .site-header { flex-direction: column; height: auto; padding: 12px; gap: 8px; }
-            .site-nav { justify-content: center; }
         }
 
         .chat-container {
@@ -665,90 +638,6 @@
     const db = firebase.firestore();
 
     let allDiseases = [];
-    let selectedDiseases = [];
-
-    async function loadBiologyData() {
-        try {
-            const response = await fetch('data.json');
-            if (!response.ok) return null;
-            const data = await response.json();
-            if (!data.models || !Array.isArray(data.models)) return null;
-            
-            const converted = [];
-            data.models.forEach(model => {
-                if (model.items && Array.isArray(model.items)) {
-                    model.items.forEach(item => {
-                        converted.push({
-                            diseaseName: item.name || model.name,
-                            symptoms: item.content || '',
-                            treatment: item.funFact || 'Xem chi tiết',
-                            prevention: `Chương: ${model.chapter}`,
-                            diseaseLevel: 'common',
-                            category: `Sinh học - Lớp ${model.grade}`,
-                            chapter: model.chapter,
-                            grade: model.grade,
-                            isFromData: true
-                        });
-                    });
-                }
-            });
-            return converted.length > 0 ? converted : null;
-        } catch (error) {
-            return null;
-        }
-    }
-
-    async function extractDiseaseNames() {
-        const data = await loadBiologyData();
-        if (!data) return [];
-        const diseaseNames = [];
-        data.models.forEach(model => {
-            if (model.items && Array.isArray(model.items)) {
-                model.items.forEach(item => {
-                    diseaseNames.push({
-                        name: item.name || model.name,
-                        content: item.content || '',
-                        funFact: item.funFact || '',
-                        chapter: model.chapter,
-                        grade: model.grade
-                    });
-                });
-            }
-        });
-        return diseaseNames;
-    }
-
-    function calculateSimilarity(symptom, diseaseName, content) {
-        let score = 0;
-        const symptomLower = symptom.toLowerCase();
-        const nameLower = diseaseName.toLowerCase();
-        const contentLower = content.toLowerCase();
-        
-        const words = symptomLower.split(/\s+/);
-        
-        for (const word of words) {
-            if (word.length < 2) continue;
-            if (nameLower.includes(word)) score += 50;
-            if (contentLower.includes(word)) score += 30;
-        }
-        
-        if (nameLower === symptomLower) score += 500;
-        if (nameLower.includes(symptomLower)) score += 200;
-        
-        return score;
-    }
-
-    async function findBestMatches(query) {
-        const diseaseNames = await extractDiseaseNames();
-        if (diseaseNames.length === 0) return [];
-        
-        const scored = diseaseNames.map(disease => ({
-            ...disease,
-            score: calculateSimilarity(query, disease.name, disease.content)
-        })).filter(d => d.score > 0).sort((a, b) => b.score - a.score);
-        
-        return scored.slice(0, 5);
-    }
 
     async function loadMedicalKnowledge() {
         try {
@@ -756,27 +645,10 @@
             const snapshot = await db.collection('medical_knowledge').get();
             allDiseases = [];
             snapshot.forEach(doc => { allDiseases.push({ id: doc.id, ...doc.data() }); });
-            
-            if (allDiseases.length === 0) {
-                const biologyData = await loadBiologyData();
-                if (biologyData) {
-                    allDiseases = biologyData;
-                    document.getElementById('statusText').innerHTML = 'Sẵn sàng tư vấn (Kiến thức sinh học)';
-                    document.getElementById('statusDot').className = 'status-dot online';
-                    return;
-                }
-                loadDemoData();
-            }
+            if (allDiseases.length === 0) loadDemoData();
             document.getElementById('statusText').innerHTML = 'Sẵn sàng tư vấn';
             document.getElementById('statusDot').className = 'status-dot online';
         } catch (error) {
-            const biologyData = await loadBiologyData();
-            if (biologyData) {
-                allDiseases = biologyData;
-                document.getElementById('statusText').innerHTML = 'Chế độ ngoại tuyến (Kiến thức sinh học)';
-                document.getElementById('statusDot').className = 'status-dot online';
-                return;
-            }
             loadDemoData();
             document.getElementById('statusText').innerHTML = 'Chế độ ngoại tuyến (dữ liệu mẫu)';
         }
@@ -919,7 +791,7 @@
         }
     }
 
-    // ================== TRANG TRÍ ICON NỀN: KHOẢNG CÁCH TỐI THIỂU 7 Ô LƯỚI (7 * 28px = 196px) ==================
+    // ================== TRANG TRÍ ICON NỀN: ƯU TIÊN PHÂN BỔ Ở PHẦN TRÊN, KHOẢNG CÁCH TỐI THIỂU 7 Ô (196px) ==================
     const medicalIcons = [
         "fa-heart", "fa-syringe", "fa-capsules", "fa-stethoscope", "fa-lungs", 
         "fa-brain", "fa-band-aid", "fa-thermometer", "fa-virus", "fa-microscope",
@@ -940,8 +812,8 @@
         const height = rect.height;
         if (width === 0 || height === 0) return;
         
-        // Số lượng icon: 13 (tạo cảm giác thưa nhưng đủ để trang trí)
-        const iconCount = 13;
+        // Tổng số icon: 15 (tăng nhẹ để có thêm icon ở phía trên)
+        const iconCount = 15;
         // Khoảng cách tối thiểu: 7 ô lưới = 7 * 28 = 196px
         const minDistancePx = 196;
         
@@ -953,9 +825,15 @@
             let posX = 0, posY = 0;
             
             while (!placed && attempts < 60) {
-                // Tạo vị trí ngẫu nhiên theo %, quy đổi sang px
+                // Tạo vị trí ngẫu nhiên, nhưng ưu tiên vùng phía trên (70% khả năng nằm ở nửa trên của container)
+                let topPercent;
+                const useTop = Math.random() < 0.7; // 70% số icon sẽ ở nửa trên (0-50% chiều cao)
+                if (useTop) {
+                    topPercent = Math.random() * 50; // 0% - 50% (phần trên)
+                } else {
+                    topPercent = 50 + Math.random() * 50; // 50% - 100% (phần dưới)
+                }
                 const leftPercent = Math.random() * 100;
-                const topPercent = Math.random() * 100;
                 const candidateX = (leftPercent / 100) * width;
                 const candidateY = (topPercent / 100) * height;
                 
@@ -981,6 +859,7 @@
             }
             // Nếu sau nhiều lần vẫn không đạt khoảng cách, vẫn chấp nhận vị trí cuối cùng (tránh treo)
             if (!placed) {
+                // fallback: random toàn bộ vùng
                 const leftPercent = Math.random() * 100;
                 const topPercent = Math.random() * 100;
                 posX = (leftPercent / 100) * width;
@@ -998,7 +877,6 @@
             
             const iconDiv = document.createElement('i');
             iconDiv.className = `fas ${randomIconClass} bg-charm-icon`;
-            // Sử dụng tọa độ tuyệt đối dạng px để giữ khoảng cách chính xác
             iconDiv.style.position = 'absolute';
             iconDiv.style.left = `${posX}px`;
             iconDiv.style.top = `${posY}px`;
