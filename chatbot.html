@@ -11,8 +11,8 @@
     
     <!-- Font Awesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -176,6 +176,7 @@
             color: #BC4E3A;
             font-weight: 600;
         }
+        
         .status-bar .action-btn:hover {
             background: rgba(250, 128, 114, 0.15);
             transform: none;
@@ -189,9 +190,15 @@
             display: inline-block;
             margin-right: 8px;
         }
+        
         .status-dot.online { background: #10B981; box-shadow: 0 0 0 2px #d1fae5; }
+        .status-dot.loading { background: #F59E0B; box-shadow: 0 0 0 2px #fef3c7; animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
-        /* === KHU VỰC CHAT MESSAGES - CARO ĐẬM VỪA + OMBRE TỪ TRÊN XUỐNG + ICON TRANG TRÍ === */
         .chat-messages {
             position: relative;
             flex: 1;
@@ -206,11 +213,9 @@
                 rgba(255, 235, 225, 0.85) 0%,
                 rgba(255, 245, 240, 0.92) 40%,
                 rgba(255, 250, 245, 0.98) 100%);
-            /* NỀN CARO: độ đậm vừa phải (0.4) kết hợp với ombre fade từ trên xuống */
             background-image: 
                 linear-gradient(to right, rgba(250, 128, 114, 0.4) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(250, 128, 114, 0.4) 1px, transparent 1px),
-                /* Lớp ombre làm mờ dần viền về phía dưới */
                 linear-gradient(to bottom, rgba(255,245,240,0) 0%, rgba(255,225,215,0.65) 100%);
             background-size: 28px 28px, 28px 28px, 100% 100%;
             background-blend-mode: overlay, overlay, normal;
@@ -218,31 +223,20 @@
             box-shadow: inset 0 0 20px rgba(250, 128, 114, 0.08);
         }
         
-        /* Lớp nội dung chat nằm trên icon trang trí */
         .message {
             position: relative;
             z-index: 2;
         }
-        
-        /* Các icon nền (trái tim, kim tiêm, ...) ngẫu nhiên, đảm bảo khoảng cách tối thiểu 7 ô lưới (≈196px) */
-        .bg-charm-icon {
-            position: absolute;
-            pointer-events: none;
-            z-index: 0;
-            font-size: 0;
-            transition: all 0.2s ease;
-            color: rgba(232, 104, 98, 0.32);
-            text-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            will-change: transform;
-        }
-        
+
         .chat-messages::-webkit-scrollbar {
             width: 6px;
         }
+        
         .chat-messages::-webkit-scrollbar-track {
             background: #fdece5;
             border-radius: 8px;
         }
+        
         .chat-messages::-webkit-scrollbar-thumb {
             background: #EAA290;
             border-radius: 8px;
@@ -405,7 +399,7 @@
             padding: 10px 24px;
             font-size: 0.7rem;
             color: #C2604A;
-            display: none;
+            display: flex;
             align-items: center;
             gap: 8px;
             border-top: 1px solid #ffddcf;
@@ -458,10 +452,16 @@
             box-shadow: 0 6px 12px rgba(250,122,110,0.3);
         }
 
-        #sendButton:hover {
+        #sendButton:hover:not(:disabled) {
             transform: scale(1.05) translateY(-2px);
             background: linear-gradient(120deg, #FF8A7A, #F07062);
             box-shadow: 0 12px 20px rgba(250,122,110,0.4);
+        }
+        
+        #sendButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .modal-overlay {
@@ -501,6 +501,7 @@
             transition: 0.2s;
             color: #BC4E3A;
         }
+        
         .modal-close:hover {
             background: #ffded2;
             color: #D45A4E;
@@ -512,11 +513,13 @@
             color: #BC4E3A;
             font-weight: 700;
         }
+        
         .modal-body .action-btn:last-child {
             background: linear-gradient(115deg, #FA7A6E, #E86862);
             color: white;
             border: none;
         }
+        
         .modal-body .action-btn:last-child:hover {
             background: linear-gradient(115deg, #FF8A7A, #F07062);
             transform: translateY(-2px);
@@ -535,7 +538,6 @@
             .site-header { padding: 0 16px; }
             .site-nav a { padding: 6px 12px; font-size: 0.7rem; }
             .suggestion-chip { padding: 6px 16px; font-size: 0.7rem; }
-            .chat-messages { background-size: 20px 20px, 20px 20px, 100% 100%; }
         }
     </style>
 </head>
@@ -544,11 +546,11 @@
 <header class="site-header">
     <div class="site-brand">SYNHOC LAB</div>
     <nav class="site-nav">
-        <a href="index.html">TRANG CHỦ</a>
-        <a href="chatbot.html" class="active">CHATBOT AI</a>
-        <a href="flashcard.html">FLASHCARD</a>
-        <a href="kinhhienvi.html">KÍNH HIỂN VI</a>
-        <a href="model3d.html">MODEL 3D</a>
+        <a href="#">TRANG CHỦ</a>
+        <a href="#" class="active">CHATBOT AI</a>
+        <a href="#">FLASHCARD</a>
+        <a href="#">KÍNH HIỂN VI</a>
+        <a href="#">MODEL 3D</a>
     </nav>
 </header>
 
@@ -567,33 +569,41 @@
     </div>
 
     <div class="status-bar">
-        <div><span class="status-dot online" id="statusDot"></span><span id="statusText">Khởi tạo kết nối...</span></div>
+        <div><span class="status-dot online" id="statusDot"></span><span id="statusText">Đang khởi tạo...</span></div>
         <button class="action-btn" id="clearChatBtn" style="background: transparent; padding: 0;"><i class="fas fa-trash-alt"></i> Làm mới</button>
     </div>
 
     <div class="chat-messages" id="chatMessages">
-        <div class="message bot" id="welcomeMessage">
+        <div class="message bot">
             <div class="message-avatar"><i class="fas fa-robot"></i></div>
             <div class="message-content">
-                Xin chào! Tôi là trợ lý y tế Vitax AI.<br><br>
-                Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn tìm ra bệnh có khả năng nhất và hướng dẫn chăm sóc phù hợp.
+                Xin chào! Tôi là Vitax AI - Trợ lý y tế thông minh.<br><br>
+                🤖 Tôi được tích hợp AI thế hệ mới, có thể:<br>
+                📋 Tra cứu cơ sở dữ liệu bệnh học từ Firebase<br>
+                🧠 Phân tích triệu chứng thông minh bằng AI Gemini<br>
+                💡 Đưa ra lời khuyên chính xác dựa trên dữ liệu y khoa<br><br>
+                Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn!
             </div>
         </div>
     </div>
 
-    <div id="typingIndicator" class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div></div>
+    <div id="typingIndicator" class="typing-indicator">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>
 
     <div class="suggestions-container">
         <div class="suggestions-title"><i class="fas fa-lightbulb"></i> Gợi ý câu hỏi nhanh</div>
         <div class="suggestions-grid">
-            <div class="suggestion-chip" onclick="setSuggestion('Triệu chứng cảm cúm là gì?')"><i class="fas fa-thermometer"></i> Triệu chứng cảm cúm</div>
-            <div class="suggestion-chip" onclick="setSuggestion('Cách chữa đau đầu tại nhà')"><i class="fas fa-head-side-brain"></i> Chữa đau đầu</div>
-            <div class="suggestion-chip" onclick="setSuggestion('Dấu hiệu sốt xuất huyết')"><i class="fas fa-biohazard"></i> Sốt xuất huyết</div>
-            <div class="suggestion-chip" onclick="setSuggestion('Viêm họng nên làm gì?')"><i class="fas fa-lungs"></i> Viêm họng</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Tôi bị sốt 39 độ, đau đầu, đau cơ, có thể bị bệnh gì?')"><i class="fas fa-thermometer"></i> Sốt cao 39°C</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Tôi bị đau họng, ho, khó nuốt, nên làm gì?')"><i class="fas fa-lungs"></i> Đau họng, ho</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Tôi bị đau bụng dưới, buồn nôn, mệt mỏi')"><i class="fas fa-stomach"></i> Đau bụng</div>
+            <div class="suggestion-chip" onclick="setSuggestion('Tôi bị chóng mặt, hoa mắt, ù tai')"><i class="fas fa-brain"></i> Chóng mặt</div>
         </div>
     </div>
 
-    <div id="warningMessage" class="warning-message"><i class="fas fa-exclamation-triangle"></i> Thông tin chỉ mang tính tham khảo. Vui lòng đến cơ sở y tế để được khám chính xác.</div>
+    <div id="warningMessage" class="warning-message">
+        <i class="fas fa-exclamation-triangle"></i> Thông tin chỉ mang tính tham khảo. Vui lòng đến cơ sở y tế để được khám chính xác.
+    </div>
 
     <div class="chat-input-container">
         <div class="input-wrapper"><input type="text" id="userInput" placeholder="Nhập triệu chứng hoặc câu hỏi... (ví dụ: đau họng, sốt, mệt mỏi)"></div>
@@ -622,10 +632,10 @@
     </div>
 </div>
 
-<footer class="footer">© 2026 SYNHOC LAB · Hệ thống y tế thông minh · Dữ liệu tham khảo chuyên sâu</footer>
+<footer class="footer">© 2026 SYNHOC LAB · Hệ thống y tế thông minh · Tích hợp AI Gemini · Dữ liệu từ Firebase</footer>
 
 <script>
-    // Firebase + core logic
+    // ==================== CẤU HÌNH ====================
     const firebaseConfig = {
         apiKey: "AIzaSyAF72F0Klk37x-gbmtJmlMXDStg7ZcUSo8",
         authDomain: "quany-75b24.firebaseapp.com",
@@ -634,96 +644,250 @@
         messagingSenderId: "53263628307",
         appId: "1:53263628307:web:243c4070f24e6f8fce67e6"
     };
+    
+    const AI_API_KEY = "sk-uQmI5tk7o5FdWLq852gCLO2xZTd5OmG2K9RKy7C3raEqGx6v";
+    const AI_API_URL = "https://api.shopaikey.com/v1/chat/completions";
+    const AI_MODEL = "gemini-2.5-flash";
+    
+    // ==================== BIẾN TOÀN CỤC ====================
+    let allDiseases = [];
+    let isProcessing = false;
+    let conversationHistory = [];
+    
+    // ==================== KHỞI TẠO FIREBASE ====================
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    let allDiseases = [];
-
+    
+    // ==================== TẢI DỮ LIỆU TỪ FIRESTORE ====================
     async function loadMedicalKnowledge() {
         try {
-            document.getElementById('statusText').innerHTML = 'Đang đồng bộ dữ liệu...';
+            updateStatus('Đang đồng bộ dữ liệu từ Firebase...', 'loading');
             const snapshot = await db.collection('medical_knowledge').get();
             allDiseases = [];
-            snapshot.forEach(doc => { allDiseases.push({ id: doc.id, ...doc.data() }); });
-            if (allDiseases.length === 0) loadDemoData();
-            document.getElementById('statusText').innerHTML = 'Sẵn sàng tư vấn';
-            document.getElementById('statusDot').className = 'status-dot online';
+            snapshot.forEach(doc => {
+                allDiseases.push({ id: doc.id, ...doc.data() });
+            });
+            
+            if (allDiseases.length === 0) {
+                loadDemoData();
+                updateStatus('Dùng dữ liệu mẫu (không có data từ Firebase)', 'online');
+            } else {
+                updateStatus(`Sẵn sàng - ${allDiseases.length} bệnh từ Firebase`, 'online');
+            }
         } catch (error) {
+            console.error("Firebase error:", error);
             loadDemoData();
-            document.getElementById('statusText').innerHTML = 'Chế độ ngoại tuyến (dữ liệu mẫu)';
+            updateStatus('Ngoại tuyến - Dùng dữ liệu mẫu', 'online');
         }
     }
-
+    
     function loadDemoData() {
         allDiseases = [
-            { diseaseName: "Cảm cúm", symptoms: "Sốt cao 38-40 độ C, đau đầu, đau họng, chảy nước mũi, đau nhức cơ thể", treatment: "Nghỉ ngơi, uống nhiều nước, thuốc hạ sốt Paracetamol", prevention: "Rửa tay, đeo khẩu trang, tiêm vắc-xin hàng năm", diseaseLevel: "common", category: "bệnh truyền nhiễm" },
-            { diseaseName: "Sốt xuất huyết", symptoms: "Sốt cao đột ngột 39-40 độ C, đau đầu dữ dội, đau sau hốc mắt, đau cơ khớp", treatment: "Uống nhiều Oresol, Paracetamol, tuyệt đối không dùng Aspirin", prevention: "Diệt muỗi vằn, ngủ mùng, loại bỏ nước đọng", diseaseLevel: "dangerous", category: "bệnh truyền nhiễm" },
-            { diseaseName: "Đau đầu căng thẳng", symptoms: "Đau âm ỉ hai bên đầu, cảm giác bị siết chặt", treatment: "Nghỉ ngơi, massage, chườm ấm, uống đủ nước", prevention: "Ngủ đủ giấc, tránh stress, tập thể dục đều đặn", diseaseLevel: "common", category: "bệnh nội khoa" },
-            { diseaseName: "Viêm họng", symptoms: "Đau rát họng, khó nuốt, sốt nhẹ, ho khan", treatment: "Súc miệng nước muối, uống nước ấm, thuốc kháng viêm", prevention: "Giữ ấm cổ, tránh nước đá, vệ sinh răng miệng", diseaseLevel: "common", category: "bệnh nội khoa" },
-            { diseaseName: "Covid-19", symptoms: "Sốt, ho khan, mệt mỏi, mất vị giác hoặc khứu giác, khó thở", treatment: "Cách ly, hạ sốt, bù nước, theo dõi oxy", prevention: "Tiêm vắc-xin, đeo khẩu trang, rửa tay", diseaseLevel: "dangerous", category: "bệnh truyền nhiễm" }
+            { diseaseName: "Cảm cúm", symptoms: "Sốt cao 38-40 độ C, đau đầu, đau họng, chảy nước mũi, đau nhức cơ thể, mệt mỏi", treatment: "Nghỉ ngơi, uống nhiều nước ấm, thuốc hạ sốt Paracetamol, bổ sung vitamin C", prevention: "Rửa tay thường xuyên, đeo khẩu trang, tiêm vắc-xin hàng năm, tránh nơi đông người", diseaseLevel: "common", category: "bệnh truyền nhiễm" },
+            { diseaseName: "Sốt xuất huyết Dengue", symptoms: "Sốt cao đột ngột 39-40 độ C, đau đầu dữ dội vùng trán, đau sau hốc mắt, đau cơ khớp, phát ban, chảy máu cam hoặc chân răng", treatment: "Uống nhiều Oresol và nước lọc, dùng Paracetamol hạ sốt, TUYỆT ĐỐI không dùng Aspirin hoặc Ibuprofen, nhập viện nếu có dấu hiệu nặng", prevention: "Diệt muỗi vằn, ngủ mùng kể cả ban ngày, loại bỏ nước đọng, mặc quần áo dài tay", diseaseLevel: "dangerous", category: "bệnh truyền nhiễm" },
+            { diseaseName: "Đau đầu căng thẳng", symptoms: "Đau âm ỉ hai bên đầu, cảm giác bị siết chặt như bị bóp, đau lan từ cổ lên, không kèm buồn nôn", treatment: "Nghỉ ngơi, massage vùng cổ và vai, chườm ấm hoặc lạnh, uống đủ nước, tập thở sâu", prevention: "Ngủ đủ 7-8 tiếng/ngày, tránh stress, tập thể dục đều đặn, điều chỉnh tư thế làm việc", diseaseLevel: "common", category: "bệnh nội khoa" },
+            { diseaseName: "Viêm họng cấp", symptoms: "Đau rát họng, khó nuốt, sốt nhẹ 37.5-38.5 độ, ho khan, khàn tiếng, amidan sưng đỏ", treatment: "Súc miệng nước muối ấm nhiều lần/ngày, uống nước ấm mật ong chanh, thuốc kháng viêm, ngậm kẹo thảo dược", prevention: "Giữ ấm cổ khi trời lạnh, tránh nước đá và đồ lạnh, vệ sinh răng miệng sạch sẽ, đeo khẩu trang", diseaseLevel: "common", category: "bệnh nội khoa" },
+            { diseaseName: "Viêm dạ dày", symptoms: "Đau thượng vị, ợ hơi, ợ chua, buồn nôn, đầy bụng sau ăn, ăn không ngon miệng", treatment: "Ăn chậm nhai kỹ, chia nhỏ bữa ăn, tránh đồ cay nóng và nhiều dầu mỡ, uống thuốc kháng acid theo chỉ định", prevention: "Ăn uống điều độ, không bỏ bữa, hạn chế căng thẳng, không uống rượu bia và cà phê", diseaseLevel: "common", category: "bệnh tiêu hóa" }
         ];
     }
+    
+    // ==================== CẬP NHẬT TRẠNG THÁI ====================
+    function updateStatus(text, type = 'online') {
+        const statusText = document.getElementById('statusText');
+        const statusDot = document.getElementById('statusDot');
+        statusText.innerHTML = text;
+        
+        if (type === 'loading') {
+            statusDot.className = 'status-dot loading';
+        } else if (type === 'online') {
+            statusDot.className = 'status-dot online';
+        }
+    }
+    
+    // ==================== XỬ LÝ CHÍNH: 2 TẦNG ====================
+    // Tầng 1: Lấy dữ liệu từ Firestore
+    // Tầng 2: Gửi dữ liệu + câu hỏi cho AI xử lý
+    
+    async function processWithAI(userMessage, relevantDiseases) {
+        // Xây dựng context từ dữ liệu bệnh lấy được
+        let contextData = "";
+        if (relevantDiseases && relevantDiseases.length > 0) {
+            contextData = "Dưới đây là dữ liệu bệnh học từ cơ sở dữ liệu y khoa:\n\n";
+            for (const disease of relevantDiseases) {
+                contextData += `🏥 BỆNH: ${disease.diseaseName}\n`;
+                contextData += `   Triệu chứng: ${disease.symptoms || 'Không có'}\n`;
+                contextData += `   Điều trị: ${disease.treatment || 'Không có'}\n`;
+                contextData += `   Phòng ngừa: ${disease.prevention || 'Không có'}\n`;
+                contextData += `   Mức độ: ${disease.diseaseLevel === 'dangerous' ? 'NGUY HIỂM - cần khám ngay' : 'Thường gặp - có thể tự chăm sóc'}\n`;
+                contextData += `   Nhóm: ${disease.category || 'Khác'}\n\n`;
+            }
+        } else {
+            contextData = "Hiện tại cơ sở dữ liệu chưa có thông tin phù hợp với triệu chứng bạn mô tả.";
+        }
+        
+        const systemPrompt = `Bạn là Vitax AI, một trợ lý y tế thông minh, chuyên nghiệp và thân thiện. 
+Nhiệm vụ của bạn là phân tích triệu chứng bệnh dựa trên dữ liệu y khoa được cung cấp.
 
-    function findBestMatch(query) {
+QUY TẮC QUAN TRỌNG:
+1. Sử dụng DỮ LIỆU ĐƯỢC CUNG CẤP để đưa ra câu trả lời chính xác
+2. Nếu triệu chứng khớp với bệnh nào trong dữ liệu, hãy phân tích chi tiết về bệnh đó
+3. Nếu triệu chứng không khớp hoàn toàn, hãy đưa ra các bệnh có khả năng cao nhất dựa trên dữ liệu
+4. Luôn đưa ra hướng dẫn chăm sóc và phòng ngừa cụ thể
+5. Phân biệt rõ các mức độ: NGUY HIỂM (cần đi khám ngay) vs THƯỜNG GẶP (có thể tự chăm sóc)
+6. Nếu dữ liệu tôi cung cấp không liên quan đến triệu chứng thì cứ bỏ qua (vì dữ liệu có thể liên quan hoặc không liên quan)
+7. Tránh sử dụng thuật ngữ y khoa quá phức tạp, hãy giải thích đơn giản dễ hiểu cho người dùng phổ thông
+8. Không được nhắc đến việc tôi đã cung cấp cho bạn dữ liệu để bạn xử lý (xem như cái đó là bạn tự biết sẵn rồi)
+
+YÊU CẦU ĐỊNH DẠNG:
+- Câu trả lời cần có cấu trúc rõ ràng, dễ đọc
+- Sử dụng emoji phù hợp (🏥, ⚠️, 📋, 💊, 🛡️, 🔔)
+- In đậm tên bệnh
+- Phân chia các phần: Triệu chứng, Điều trị, Phòng ngừa, Mức độ nguy hiểm
+
+⚠️ BẮT BUỘC: Cuối mỗi câu trả lời, bạn PHẢI thêm dòng:
+"🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và hỗ trợ kịp thời."`;
+
+        const userPrompt = `Câu hỏi từ người dùng: "${userMessage}"
+
+${contextData}
+
+Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra câu trả lời tư vấn sức khỏe cho người dùng. Nếu có thể, hãy xác định bệnh có khả năng mắc phải và hướng dẫn cụ thể.`;
+
+        try {
+            const response = await fetch(AI_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${AI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: AI_MODEL,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 4096
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                let reply = data.choices[0].message.content;
+                
+                // Đảm bảo có dòng lưu ý quan trọng
+                if (!reply.includes("Lưu ý quan trọng")) {
+                    reply += "\n\n🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và hỗ trợ kịp thời.";
+                }
+                
+                return reply;
+            }
+            throw new Error('Invalid response format');
+        } catch (error) {
+            console.error("AI Error:", error);
+            return fallbackResponse(userMessage, relevantDiseases);
+        }
+    }
+    
+    // Hàm dự phòng khi AI lỗi
+    function fallbackResponse(userMessage, relevantDiseases) {
+        if (relevantDiseases && relevantDiseases.length > 0) {
+            const disease = relevantDiseases[0];
+            let response = `🏥 **${disease.diseaseName}**\n\n`;
+            response += `${disease.diseaseLevel === 'dangerous' ? '⚠️ Mức độ nguy hiểm: Cần đi khám bác sĩ ngay.' : '🟢 Mức độ thường gặp: Có thể tự chăm sóc tại nhà.'}\n\n`;
+            response += `📋 Triệu chứng: ${disease.symptoms}\n\n`;
+            response += `💊 Điều trị: ${disease.treatment}\n\n`;
+            response += `🛡️ Phòng ngừa: ${disease.prevention}\n\n`;
+            response += `🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và hỗ trợ kịp thời.`;
+            return response;
+        }
+        return `Rất tiếc, tôi chưa tìm thấy thông tin phù hợp với triệu chứng "${userMessage}" trong cơ sở dữ liệu. Vui lòng tham khảo ý kiến bác sĩ để được chẩn đoán chính xác.\n\n🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và hỗ trợ kịp thời.`;
+    }
+    
+    // Tìm bệnh liên quan từ database
+    function findRelevantDiseases(query) {
         const q = query.toLowerCase();
-        let best = null, bestScore = 0;
-        for (const d of allDiseases) {
+        const scored = allDiseases.map(disease => {
             let score = 0;
-            const name = d.diseaseName.toLowerCase();
-            const symp = (d.symptoms || '').toLowerCase();
+            const name = (disease.diseaseName || '').toLowerCase();
+            const symptoms = (disease.symptoms || '').toLowerCase();
+            
+            // Tìm từ khóa trong tên bệnh
             if (name.includes(q)) score += 100;
-            else if (q.includes(name)) score += 70;
+            else if (q.includes(name)) score += 60;
+            
+            // Tìm từ khóa trong triệu chứng
             const words = q.split(/\s+/);
             for (let w of words) {
                 if (w.length < 2) continue;
-                if (name.includes(w)) score += 30;
-                if (symp.includes(w)) score += 22;
+                if (name.includes(w)) score += 25;
+                if (symptoms.includes(w)) score += 20;
             }
-            if (score > bestScore) { bestScore = score; best = d; }
-        }
-        return best;
-    }
-
-    function formatNaturalResponse(disease) {
-        let levelDesc = "";
-        if (disease.diseaseLevel === 'dangerous') levelDesc = "⚠️ Mức độ nguy hiểm: Cần đi khám bác sĩ ngay.";
-        else if (disease.diseaseLevel === 'common') levelDesc = "🟢 Mức độ thường gặp: Có thể tự chăm sóc tại nhà và theo dõi.";
-        else levelDesc = "🔵 Mức độ hiếm gặp: Nên thăm khám để được chẩn đoán chính xác.";
-
-        let response = `🏥 **${disease.diseaseName}**\n\n`;
-        response += `${levelDesc}\n\n`;
-        response += `📋 Triệu chứng chi tiết:\n${disease.symptoms}\n\n`;
-        response += `💊 Hướng dẫn chăm sóc và điều trị:\n${disease.treatment}\n\n`;
-        response += `🛡️ Phòng ngừa:\n${disease.prevention}\n\n`;
-        response += `📂 Nhóm bệnh: ${disease.category || 'Khác'}\n\n`;
-        response += `🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và điều trị kịp thời.`;
-        return response;
-    }
-
-    async function processMessage(userMessage) {
-        if (!userMessage.trim()) return;
-        addMessage(userMessage, 'user');
-        showTyping(true);
-        document.getElementById('warningMessage').style.display = 'flex';
+            
+            return { disease, score };
+        });
         
-        setTimeout(() => {
-            const matched = findBestMatch(userMessage);
-            showTyping(false);
-            if (!matched) {
-                addMessage("Rất tiếc, tôi chưa có đủ thông tin về triệu chứng này. Bạn hãy mô tả chi tiết hơn (ví dụ: sốt bao nhiêu độ, đau vùng nào) hoặc tham khảo ý kiến bác sĩ nhé.", 'bot');
-                return;
-            }
-            const answer = formatNaturalResponse(matched);
-            addMessage(answer, 'bot');
-        }, 700);
+        scored.sort((a, b) => b.score - a.score);
+        return scored.filter(s => s.score > 0).slice(0, 5).map(s => s.disease);
     }
-
+    
+    // ==================== XỬ LÝ TIN NHẮN ====================
+    async function processMessage(userMessage) {
+        if (isProcessing) return;
+        if (!userMessage.trim()) return;
+        
+        isProcessing = true;
+        const sendBtn = document.getElementById('sendButton');
+        sendBtn.disabled = true;
+        
+        // Hiển thị tin nhắn người dùng
+        addMessage(userMessage, 'user');
+        document.getElementById('userInput').value = '';
+        
+        // Hiển thị typing indicator
+        showTyping(true);
+        updateStatus('Đang phân tích triệu chứng...', 'loading');
+        
+        try {
+            // TẦNG 1: Lấy dữ liệu từ Firestore (đã có sẵn trong allDiseases)
+            updateStatus('Tầng 1: Tra cứu dữ liệu bệnh học...', 'loading');
+            const relevantDiseases = findRelevantDiseases(userMessage);
+            
+            // TẦNG 2: Gửi dữ liệu cho AI xử lý
+            updateStatus('Tầng 2: AI đang phân tích và tư vấn...', 'loading');
+            const aiResponse = await processWithAI(userMessage, relevantDiseases);
+            
+            showTyping(false);
+            addMessage(aiResponse, 'bot');
+            updateStatus('Tư vấn thành công', 'online');
+            
+        } catch (error) {
+            console.error("Processing error:", error);
+            showTyping(false);
+            addMessage(`❌ Có lỗi xảy ra: ${error.message}. Vui lòng thử lại sau.`, 'bot');
+            updateStatus('Lỗi xử lý', 'online');
+        } finally {
+            isProcessing = false;
+            sendBtn.disabled = false;
+            document.getElementById('userInput').focus();
+        }
+    }
+    
+    // ==================== HIỂN THỊ TIN NHẮN ====================
     function addMessage(content, sender) {
         const container = document.getElementById('chatMessages');
         const div = document.createElement('div');
         div.className = `message ${sender}`;
-        const time = new Date().toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' });
-        const formattedContent = content.replace(/\n/g, '<br>');
+        const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        
+        let formattedContent = content;
+        formattedContent = formattedContent.replace(/\n/g, '<br>');
+        formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
         div.innerHTML = `
             <div class="message-avatar"><i class="fas ${sender === 'user' ? 'fa-user' : 'fa-robot'}"></i></div>
             <div class="message-content">
@@ -733,37 +897,44 @@
         `;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
+        
+        // Lưu lịch sử
+        conversationHistory.push({ role: sender === 'user' ? 'user' : 'assistant', content: content });
+        if (conversationHistory.length > 30) conversationHistory = conversationHistory.slice(-30);
     }
-
-    function clearChatHistory() {
-        const container = document.getElementById('chatMessages');
-        const messages = container.querySelectorAll('.message');
-        messages.forEach(msg => msg.remove());
-        const welcomeDiv = document.createElement('div');
-        welcomeDiv.className = 'message bot';
-        welcomeDiv.innerHTML = `
-            <div class="message-avatar"><i class="fas fa-robot"></i></div>
-            <div class="message-content">
-                Xin chào! Tôi là trợ lý y tế Vitax AI.<br><br>
-                Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn tìm ra bệnh có khả năng nhất và hướng dẫn chăm sóc phù hợp.
-            </div>
-        `;
-        container.appendChild(welcomeDiv);
-        document.getElementById('warningMessage').style.display = 'none';
-        document.getElementById('userInput').value = '';
-        document.getElementById('userInput').focus();
-    }
-
+    
     function showTyping(show) {
-        const el = document.getElementById('typingIndicator');
-        el.style.display = show ? 'flex' : 'none';
+        const typingEl = document.getElementById('typingIndicator');
+        typingEl.style.display = show ? 'flex' : 'none';
+        if (show) {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
     }
-
+    
+    // ==================== TIỆN ÍCH ====================
+    function clearChatHistory() {
+        if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử chat?')) {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = `
+                <div class="message bot">
+                    <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="message-content">
+                        🗑️ Đã xóa lịch sử trò chuyện.<br><br>
+                        Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn phân tích!
+                    </div>
+                </div>
+            `;
+            conversationHistory = [];
+            updateStatus('Đã xóa lịch sử', 'online');
+        }
+    }
+    
     function setSuggestion(text) {
         document.getElementById('userInput').value = text;
         processMessage(text);
     }
-
+    
     function openReportModal() { document.getElementById('reportModal').style.display = 'flex'; }
     function closeReportModal() { document.getElementById('reportModal').style.display = 'none'; clearModal(); }
     function clearModal() {
@@ -771,7 +942,7 @@
         document.getElementById('suggestionFix').value = '';
         document.getElementById('contactEmail').value = '';
     }
-
+    
     async function submitReport() {
         const desc = document.getElementById('errorDescription').value.trim();
         if (!desc) { alert('Vui lòng nhập mô tả lỗi hoặc góp ý.'); return; }
@@ -790,145 +961,27 @@
             alert('Gửi báo cáo thất bại. Vui lòng thử lại sau.');
         }
     }
-
-    // ================== TRANG TRÍ ICON NỀN: ƯU TIÊN PHÂN BỔ Ở PHẦN TRÊN, KHOẢNG CÁCH TỐI THIỂU 7 Ô (196px) ==================
-    const medicalIcons = [
-        "fa-heart", "fa-syringe", "fa-capsules", "fa-stethoscope", "fa-lungs", 
-        "fa-brain", "fa-band-aid", "fa-thermometer", "fa-virus", "fa-microscope",
-        "fa-heartbeat", "fa-eye", "fa-tooth", "fa-bone", "fa-flask", "fa-hospital"
-    ];
     
-    let iconResizeTimer;
-    
-    function generateRandomIcons() {
-        const container = document.getElementById('chatMessages');
-        if (!container) return;
-        // Xóa icon cũ
-        const oldIcons = container.querySelectorAll('.bg-charm-icon');
-        oldIcons.forEach(icon => icon.remove());
+    // ==================== KHỞI TẠO ====================
+    window.onload = async () => {
+        await loadMedicalKnowledge();
         
-        const rect = container.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        if (width === 0 || height === 0) return;
-        
-        // Tổng số icon: 15 (tăng nhẹ để có thêm icon ở phía trên)
-        const iconCount = 15;
-        // Khoảng cách tối thiểu: 7 ô lưới = 7 * 28 = 196px
-        const minDistancePx = 196;
-        
-        const positions = []; // lưu các {x, y} tọa độ thực tế (px)
-        
-        for (let i = 0; i < iconCount; i++) {
-            let attempts = 0;
-            let placed = false;
-            let posX = 0, posY = 0;
-            
-            while (!placed && attempts < 60) {
-                // Tạo vị trí ngẫu nhiên, nhưng ưu tiên vùng phía trên (70% khả năng nằm ở nửa trên của container)
-                let topPercent;
-                const useTop = Math.random() < 0.7; // 70% số icon sẽ ở nửa trên (0-50% chiều cao)
-                if (useTop) {
-                    topPercent = Math.random() * 50; // 0% - 50% (phần trên)
-                } else {
-                    topPercent = 50 + Math.random() * 50; // 50% - 100% (phần dưới)
-                }
-                const leftPercent = Math.random() * 100;
-                const candidateX = (leftPercent / 100) * width;
-                const candidateY = (topPercent / 100) * height;
-                
-                // Kiểm tra khoảng cách với các icon đã có
-                let tooClose = false;
-                for (let p of positions) {
-                    const dx = p.x - candidateX;
-                    const dy = p.y - candidateY;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < minDistancePx) {
-                        tooClose = true;
-                        break;
-                    }
-                }
-                
-                if (!tooClose) {
-                    posX = candidateX;
-                    posY = candidateY;
-                    placed = true;
-                    positions.push({ x: posX, y: posY });
-                }
-                attempts++;
-            }
-            // Nếu sau nhiều lần vẫn không đạt khoảng cách, vẫn chấp nhận vị trí cuối cùng (tránh treo)
-            if (!placed) {
-                // fallback: random toàn bộ vùng
-                const leftPercent = Math.random() * 100;
-                const topPercent = Math.random() * 100;
-                posX = (leftPercent / 100) * width;
-                posY = (topPercent / 100) * height;
-                positions.push({ x: posX, y: posY });
-            }
-            
-            // Chọn icon ngẫu nhiên
-            const randomIconClass = medicalIcons[Math.floor(Math.random() * medicalIcons.length)];
-            const size = Math.floor(Math.random() * (32 - 18 + 1) + 18);
-            const opacity = 0.22 + Math.random() * 0.18;
-            const rotate = Math.floor(Math.random() * 360);
-            const colors = ["#E86862", "#FA7A6E", "#D96050", "#C25444", "#E28B7A", "#F08A6E"];
-            const colorPick = colors[Math.floor(Math.random() * colors.length)];
-            
-            const iconDiv = document.createElement('i');
-            iconDiv.className = `fas ${randomIconClass} bg-charm-icon`;
-            iconDiv.style.position = 'absolute';
-            iconDiv.style.left = `${posX}px`;
-            iconDiv.style.top = `${posY}px`;
-            iconDiv.style.fontSize = `${size}px`;
-            iconDiv.style.opacity = opacity;
-            iconDiv.style.color = colorPick;
-            iconDiv.style.transform = `rotate(${rotate}deg)`;
-            iconDiv.style.filter = 'drop-shadow(0 2px 3px rgba(0,0,0,0.02))';
-            iconDiv.style.pointerEvents = 'none';
-            iconDiv.style.zIndex = '0';
-            
-            container.appendChild(iconDiv);
-        }
-    }
-    
-    function debouncedResizeIcons() {
-        if (iconResizeTimer) clearTimeout(iconResizeTimer);
-        iconResizeTimer = setTimeout(() => {
-            generateRandomIcons();
-        }, 200);
-    }
-    
-    window.onload = () => {
-        loadMedicalKnowledge();
         const sendBtn = document.getElementById('sendButton');
         const inputField = document.getElementById('userInput');
         const clearBtn = document.getElementById('clearChatBtn');
         
-        sendBtn.addEventListener('click', () => {
-            const msg = inputField.value.trim();
-            if (msg) { processMessage(msg); inputField.value = ''; }
-        });
-        
+        sendBtn.addEventListener('click', () => processMessage(inputField.value.trim()));
         inputField.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); sendBtn.click(); }
+            if (e.key === 'Enter' && !isProcessing) {
+                e.preventDefault();
+                processMessage(inputField.value.trim());
+            }
         });
-        
         clearBtn.addEventListener('click', clearChatHistory);
+        
         inputField.focus();
-        
-        setTimeout(() => {
-            generateRandomIcons();
-        }, 120);
-        
-        window.addEventListener('resize', debouncedResizeIcons);
-        
-        const chatContainer = document.getElementById('chatMessages');
-        const resizeObserver = new ResizeObserver(() => {
-            generateRandomIcons();
-        });
-        if (chatContainer) resizeObserver.observe(chatContainer);
     };
 </script>
+
 </body>
 </html>
