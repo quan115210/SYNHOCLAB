@@ -525,6 +525,32 @@
             transform: translateY(-2px);
         }
 
+        /* Camera Modal Styles */
+        .camera-modal .modal-container {
+            max-width: 640px;
+        }
+        .camera-preview {
+            width: 100%;
+            background: #000;
+            border-radius: 20px;
+            margin: 10px 0;
+        }
+        #videoElement {
+            width: 100%;
+            border-radius: 20px;
+            background: #222;
+        }
+        #capturedImage {
+            width: 100%;
+            border-radius: 20px;
+            display: none;
+        }
+        .camera-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 16px 0;
+        }
         .footer {
             text-align: center;
             padding: 20px;
@@ -570,7 +596,10 @@
 
     <div class="status-bar">
         <div><span class="status-dot online" id="statusDot"></span><span id="statusText">Đang khởi tạo...</span></div>
-        <button class="action-btn" id="clearChatBtn" style="background: transparent; padding: 0;"><i class="fas fa-trash-alt"></i> Làm mới</button>
+        <div>
+            <button class="action-btn" id="skinAnalysisBtn" style="background: transparent; padding: 0 12px;"><i class="fas fa-camera"></i> 📸 Phân tích da</button>
+            <button class="action-btn" id="clearChatBtn" style="background: transparent; padding: 0;"><i class="fas fa-trash-alt"></i> Làm mới</button>
+        </div>
     </div>
 
     <div class="chat-messages" id="chatMessages">
@@ -578,11 +607,12 @@
             <div class="message-avatar"><i class="fas fa-robot"></i></div>
             <div class="message-content">
                 Xin chào! Tôi là Vitax AI - Trợ lý y tế thông minh.<br><br>
-                🤖 Tôi được tích hợp AI thế hệ mới, có thể:<br>
+                🤖 Tôi được tích hợp AI thế hệ mới (Qwen3.5 Plus), có thể:<br>
                 📋 Tra cứu cơ sở dữ liệu bệnh học từ Firebase<br>
-                🧠 Phân tích triệu chứng thông minh bằng AI Gemini<br>
-                💡 Đưa ra lời khuyên chính xác dựa trên dữ liệu y khoa<br><br>
-                Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn!
+                🧠 Phân tích triệu chứng thông minh<br>
+                💡 Đưa ra lời khuyên chính xác dựa trên dữ liệu y khoa<br>
+                📸 Phân tích tình trạng da qua camera (Claude Opus 4.6)<br><br>
+                Hãy mô tả triệu chứng của bạn hoặc sử dụng camera để phân tích da!
             </div>
         </div>
     </div>
@@ -611,6 +641,7 @@
     </div>
 </div>
 
+<!-- Modal báo lỗi -->
 <div id="reportModal" class="modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
@@ -632,7 +663,30 @@
     </div>
 </div>
 
-<footer class="footer">© 2026 SYNHOC LAB · Hệ thống y tế thông minh · Tích hợp AI Gemini · Dữ liệu từ Firebase</footer>
+<!-- Modal camera cho phân tích da liễu -->
+<div id="cameraModal" class="modal-overlay camera-modal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fas fa-camera"></i> Phân tích da liễu bằng AI</h3>
+            <button class="modal-close" id="closeCameraModalBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="camera-preview">
+                <video id="videoElement" autoplay playsinline style="width:100%"></video>
+                <canvas id="canvasCapture" style="display:none;"></canvas>
+                <img id="capturedImage" src="" alt="Ảnh chụp">
+            </div>
+            <div class="camera-controls">
+                <button class="action-btn" id="captureBtn"><i class="fas fa-camera"></i> Chụp ảnh</button>
+                <button class="action-btn" id="resetCameraBtn" style="display:none;"><i class="fas fa-redo"></i> Chụp lại</button>
+                <button class="action-btn" id="analyzeSkinBtn" style="display:none; background: linear-gradient(115deg, #FA7A6E, #E86862); color:white;"><i class="fas fa-microscope"></i> Phân tích da</button>
+            </div>
+            <p style="font-size:0.7rem; text-align:center; margin-top:8px;">Hướng camera vào vùng da cần phân tích (mặt, tay...), sau đó chụp ảnh.</p>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">© 2026 SYNHOC LAB · Hệ thống y tế thông minh · Tích hợp Qwen AI & Claude Vision · Dữ liệu từ Firebase</footer>
 
 <script>
     // ==================== CẤU HÌNH ====================
@@ -645,15 +699,20 @@
         appId: "1:53263628307:web:243c4070f24e6f8fce67e6"
     };
     
-    // API key mới
-    const AI_API_KEY = "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";
+    // API cho chatbot chính (Qwen)
+    const QWEN_API_KEY = "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";
+    // API cho phân tích da liễu (Claude Opus 4.6 Fast)
+    const CLAUDE_API_KEY = "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";
     const AI_API_URL = "https://api.shopaikey.com/v1/chat/completions";
-    const AI_MODEL = "gemini-2.5-flash";
+    const CHAT_MODEL = "Qwen3.5 Plus 2026-04-20";   // Model Qwen theo yêu cầu
+    const VISION_MODEL = "claude-opus-4.6-fast";    // Claude Opus 4.6 (Fast)
     
     // ==================== BIẾN TOÀN CỤC ====================
     let allDiseases = [];
     let isProcessing = false;
     let conversationHistory = [];
+    let mediaStream = null;
+    let currentImageBase64 = null;
     
     // ==================== KHỞI TẠO FIREBASE ====================
     firebase.initializeApp(firebaseConfig);
@@ -705,12 +764,8 @@
         }
     }
     
-    // ==================== XỬ LÝ CHÍNH: 2 TẦNG ====================
-    // Tầng 1: Lấy dữ liệu từ Firestore
-    // Tầng 2: Gửi dữ liệu + câu hỏi cho AI xử lý
-    
+    // ==================== XỬ LÝ CHÍNH: CHATBOT VỚI QWEN ====================
     async function processWithAI(userMessage, relevantDiseases) {
-        // Xây dựng context từ dữ liệu bệnh lấy được
         let contextData = "";
         if (relevantDiseases && relevantDiseases.length > 0) {
             contextData = "Dưới đây là dữ liệu bệnh học từ cơ sở dữ liệu y khoa:\n\n";
@@ -726,6 +781,7 @@
             contextData = "Hiện tại cơ sở dữ liệu chưa có thông tin phù hợp với triệu chứng bạn mô tả.";
         }
         
+        // Loại bỏ các dấu ##, #### trong system prompt
         const systemPrompt = `Bạn là Vitax AI, một trợ lý y tế thông minh, chuyên nghiệp và thân thiện. 
 Nhiệm vụ của bạn là phân tích triệu chứng bệnh dựa trên dữ liệu y khoa được cung cấp.
 
@@ -737,7 +793,6 @@ QUY TẮC QUAN TRỌNG:
 5. Phân biệt rõ các mức độ: NGUY HIỂM (cần đi khám ngay) vs THƯỜNG GẶP (có thể tự chăm sóc)
 6. Nếu dữ liệu tôi cung cấp không liên quan đến triệu chứng thì cứ bỏ qua (vì dữ liệu có thể liên quan hoặc không liên quan)
 7. Tránh sử dụng thuật ngữ y khoa quá phức tạp, hãy giải thích đơn giản dễ hiểu cho người dùng phổ thông
-8. Không được nhắc đến việc tôi đã cung cấp cho bạn dữ liệu để bạn xử lý (xem như cái đó là bạn tự biết sẵn rồi)
 
 YÊU CẦU ĐỊNH DẠNG:
 - Câu trả lời cần có cấu trúc rõ ràng, dễ đọc
@@ -759,10 +814,10 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${AI_API_KEY}`
+                    'Authorization': `Bearer ${QWEN_API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: AI_MODEL,
+                    model: CHAT_MODEL,
                     messages: [
                         { role: 'system', content: systemPrompt },
                         { role: 'user', content: userPrompt }
@@ -772,29 +827,24 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
                 })
             });
             
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
-            }
-            
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
             const data = await response.json();
             if (data.choices && data.choices[0] && data.choices[0].message) {
                 let reply = data.choices[0].message.content;
-                
-                // Đảm bảo có dòng lưu ý quan trọng
+                // Loại bỏ các ký tự ##, #### nếu có trong reply (dự phòng)
+                reply = reply.replace(/##+/g, '').replace(/####+/g, '');
                 if (!reply.includes("Lưu ý quan trọng")) {
                     reply += "\n\n🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và hỗ trợ kịp thời.";
                 }
-                
                 return reply;
             }
             throw new Error('Invalid response format');
         } catch (error) {
-            console.error("AI Error:", error);
+            console.error("Qwen AI Error:", error);
             return fallbackResponse(userMessage, relevantDiseases);
         }
     }
     
-    // Hàm dự phòng khi AI lỗi
     function fallbackResponse(userMessage, relevantDiseases) {
         if (relevantDiseases && relevantDiseases.length > 0) {
             const disease = relevantDiseases[0];
@@ -809,86 +859,155 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
         return `Rất tiếc, tôi chưa tìm thấy thông tin phù hợp với triệu chứng "${userMessage}" trong cơ sở dữ liệu. Vui lòng tham khảo ý kiến bác sĩ để được chẩn đoán chính xác.\n\n🔔 Lưu ý quan trọng: Thông tin chỉ mang tính tham khảo. Hãy đến cơ sở y tế để được khám và hỗ trợ kịp thời.`;
     }
     
-    // Tìm bệnh liên quan từ database
     function findRelevantDiseases(query) {
         const q = query.toLowerCase();
         const scored = allDiseases.map(disease => {
             let score = 0;
             const name = (disease.diseaseName || '').toLowerCase();
             const symptoms = (disease.symptoms || '').toLowerCase();
-            
-            // Tìm từ khóa trong tên bệnh
             if (name.includes(q)) score += 100;
             else if (q.includes(name)) score += 60;
-            
-            // Tìm từ khóa trong triệu chứng
             const words = q.split(/\s+/);
             for (let w of words) {
                 if (w.length < 2) continue;
                 if (name.includes(w)) score += 25;
                 if (symptoms.includes(w)) score += 20;
             }
-            
             return { disease, score };
         });
-        
         scored.sort((a, b) => b.score - a.score);
         return scored.filter(s => s.score > 0).slice(0, 5).map(s => s.disease);
     }
     
-    // ==================== XỬ LÝ TIN NHẮN ====================
-    async function processMessage(userMessage) {
-        if (isProcessing) return;
-        if (!userMessage.trim()) return;
-        
-        isProcessing = true;
-        const sendBtn = document.getElementById('sendButton');
-        sendBtn.disabled = true;
-        
-        // Hiển thị tin nhắn người dùng
-        addMessage(userMessage, 'user');
-        document.getElementById('userInput').value = '';
-        
-        // Hiển thị typing indicator
-        showTyping(true);
-        updateStatus('Đang phân tích triệu chứng...', 'loading');
+    // ==================== PHÂN TÍCH HÌNH ẢNH DA LIỄU VỚI CLAUDE OPUS 4.6 ====================
+    async function analyzeSkinImage(base64Image) {
+        const systemPrompt = "Bạn là chuyên gia da liễu. Phân tích ảnh da được cung cấp, xác định các vấn đề (mụn, nám, đỏ, khô, viêm, ...), đánh giá mức độ nghiêm trọng (nhẹ, trung bình, nặng) và đưa ra lời khuyên sơ bộ. Trả lời bằng tiếng Việt, cấu trúc rõ ràng, thân thiện.";
+        const userMessage = "Đây là ảnh vùng da cần phân tích. Hãy cho biết tình trạng, các bất thường (nếu có) và mức độ nghiêm trọng. Nếu có vết mụn, hãy phân tích loại mụn và khuyến nghị.";
         
         try {
-            // TẦNG 1: Lấy dữ liệu từ Firestore (đã có sẵn trong allDiseases)
-            updateStatus('Tầng 1: Tra cứu dữ liệu bệnh học...', 'loading');
-            const relevantDiseases = findRelevantDiseases(userMessage);
-            
-            // TẦNG 2: Gửi dữ liệu cho AI xử lý
-            updateStatus('Tầng 2: AI đang phân tích và tư vấn...', 'loading');
-            const aiResponse = await processWithAI(userMessage, relevantDiseases);
-            
-            showTyping(false);
-            addMessage(aiResponse, 'bot');
-            updateStatus('Tư vấn thành công', 'online');
-            
+            const response = await fetch(AI_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${CLAUDE_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: VISION_MODEL,
+                    messages: [
+                        {
+                            role: "user",
+                            content: [
+                                { type: "text", text: userMessage },
+                                { type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+                            ]
+                        }
+                    ],
+                    max_tokens: 1024
+                })
+            });
+            if (!response.ok) throw new Error(`Claude API error: ${response.status}`);
+            const data = await response.json();
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                let result = data.choices[0].message.content;
+                result = result.replace(/##+/g, '').replace(/####+/g, '');
+                return result;
+            }
+            throw new Error("Invalid response from Claude");
         } catch (error) {
-            console.error("Processing error:", error);
-            showTyping(false);
-            addMessage(`❌ Có lỗi xảy ra: ${error.message}. Vui lòng thử lại sau.`, 'bot');
-            updateStatus('Lỗi xử lý', 'online');
-        } finally {
-            isProcessing = false;
-            sendBtn.disabled = false;
-            document.getElementById('userInput').focus();
+            console.error("Claude vision error:", error);
+            return "❌ Không thể phân tích ảnh da lúc này. Vui lòng thử lại sau. Lưu ý: Thông tin chỉ mang tính tham khảo, hãy đến bác sĩ da liễu để được tư vấn chính xác.";
         }
     }
     
-    // ==================== HIỂN THỊ TIN NHẮN ====================
+    // ==================== XỬ LÝ CAMERA ====================
+    async function initCamera() {
+        try {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            mediaStream = stream;
+            const video = document.getElementById('videoElement');
+            video.srcObject = stream;
+            await video.play();
+            document.getElementById('capturedImage').style.display = 'none';
+            video.style.display = 'block';
+            document.getElementById('captureBtn').style.display = 'inline-flex';
+            document.getElementById('resetCameraBtn').style.display = 'none';
+            document.getElementById('analyzeSkinBtn').style.display = 'none';
+        } catch (err) {
+            console.error("Camera error:", err);
+            alert("Không thể truy cập camera. Vui lòng kiểm tra quyền và thử lại.");
+        }
+    }
+    
+    function captureImage() {
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvasCapture');
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageDataURL = canvas.toDataURL('image/jpeg', 0.9);
+        currentImageBase64 = imageDataURL.split(',')[1];
+        const imgElement = document.getElementById('capturedImage');
+        imgElement.src = imageDataURL;
+        imgElement.style.display = 'block';
+        video.style.display = 'none';
+        document.getElementById('captureBtn').style.display = 'none';
+        document.getElementById('resetCameraBtn').style.display = 'inline-flex';
+        document.getElementById('analyzeSkinBtn').style.display = 'inline-flex';
+    }
+    
+    function resetCamera() {
+        const video = document.getElementById('videoElement');
+        video.style.display = 'block';
+        document.getElementById('capturedImage').style.display = 'none';
+        document.getElementById('captureBtn').style.display = 'inline-flex';
+        document.getElementById('resetCameraBtn').style.display = 'none';
+        document.getElementById('analyzeSkinBtn').style.display = 'none';
+        currentImageBase64 = null;
+    }
+    
+    async function analyzeCapturedImage() {
+        if (!currentImageBase64) {
+            alert("Chưa có ảnh chụp. Hãy chụp ảnh trước.");
+            return;
+        }
+        // Đóng modal camera
+        closeCameraModal();
+        // Hiển thị tin nhắn đang xử lý trong chat
+        addMessage("📸 Đã chụp ảnh vùng da. Đang phân tích bằng AI Claude Opus 4.6...", "user");
+        showTyping(true);
+        updateStatus("Đang phân tích ảnh da liễu...", "loading");
+        try {
+            const analysis = await analyzeSkinImage(currentImageBase64);
+            showTyping(false);
+            addMessage(analysis, "bot");
+            updateStatus("Phân tích da hoàn tất", "online");
+        } catch (err) {
+            showTyping(false);
+            addMessage(`❌ Lỗi phân tích: ${err.message}. Vui lòng thử lại.`, "bot");
+            updateStatus("Lỗi phân tích da", "online");
+        } finally {
+            // Dọn dẹp camera
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            currentImageBase64 = null;
+        }
+    }
+    
+    // ==================== HIỂN THỊ TIN NHẮN CHAT ====================
     function addMessage(content, sender) {
         const container = document.getElementById('chatMessages');
         const div = document.createElement('div');
         div.className = `message ${sender}`;
         const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        
         let formattedContent = content;
         formattedContent = formattedContent.replace(/\n/g, '<br>');
         formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        
         div.innerHTML = `
             <div class="message-avatar"><i class="fas ${sender === 'user' ? 'fa-user' : 'fa-robot'}"></i></div>
             <div class="message-content">
@@ -898,8 +1017,6 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
         `;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
-        
-        // Lưu lịch sử
         conversationHistory.push({ role: sender === 'user' ? 'user' : 'assistant', content: content });
         if (conversationHistory.length > 30) conversationHistory = conversationHistory.slice(-30);
     }
@@ -913,7 +1030,36 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
         }
     }
     
-    // ==================== TIỆN ÍCH ====================
+    // ==================== XỬ LÝ TIN NHẮN NGƯỜI DÙNG ====================
+    async function processMessage(userMessage) {
+        if (isProcessing) return;
+        if (!userMessage.trim()) return;
+        isProcessing = true;
+        const sendBtn = document.getElementById('sendButton');
+        sendBtn.disabled = true;
+        addMessage(userMessage, 'user');
+        document.getElementById('userInput').value = '';
+        showTyping(true);
+        updateStatus('Đang phân tích triệu chứng...', 'loading');
+        try {
+            const relevantDiseases = findRelevantDiseases(userMessage);
+            updateStatus('AI Qwen đang tư vấn...', 'loading');
+            const aiResponse = await processWithAI(userMessage, relevantDiseases);
+            showTyping(false);
+            addMessage(aiResponse, 'bot');
+            updateStatus('Tư vấn thành công', 'online');
+        } catch (error) {
+            console.error("Processing error:", error);
+            showTyping(false);
+            addMessage(`❌ Có lỗi xảy ra: ${error.message}. Vui lòng thử lại sau.`, 'bot');
+            updateStatus('Lỗi xử lý', 'online');
+        } finally {
+            isProcessing = false;
+            sendBtn.disabled = false;
+            document.getElementById('userInput').focus();
+        }
+    }
+    
     function clearChatHistory() {
         if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử chat?')) {
             const container = document.getElementById('chatMessages');
@@ -922,7 +1068,7 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
                     <div class="message-avatar"><i class="fas fa-robot"></i></div>
                     <div class="message-content">
                         🗑️ Đã xóa lịch sử trò chuyện.<br><br>
-                        Hãy mô tả triệu chứng của bạn, tôi sẽ giúp bạn phân tích!
+                        Hãy mô tả triệu chứng của bạn hoặc sử dụng camera phân tích da!
                     </div>
                 </div>
             `;
@@ -936,6 +1082,7 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
         processMessage(text);
     }
     
+    // ==================== MODAL BÁO LỖI ====================
     function openReportModal() { document.getElementById('reportModal').style.display = 'flex'; }
     function closeReportModal() { document.getElementById('reportModal').style.display = 'none'; clearModal(); }
     function clearModal() {
@@ -943,7 +1090,6 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
         document.getElementById('suggestionFix').value = '';
         document.getElementById('contactEmail').value = '';
     }
-    
     async function submitReport() {
         const desc = document.getElementById('errorDescription').value.trim();
         if (!desc) { alert('Vui lòng nhập mô tả lỗi hoặc góp ý.'); return; }
@@ -963,6 +1109,22 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
         }
     }
     
+    // ==================== MODAL CAMERA ====================
+    function openCameraModal() {
+        const modal = document.getElementById('cameraModal');
+        modal.style.display = 'flex';
+        initCamera();
+    }
+    function closeCameraModal() {
+        const modal = document.getElementById('cameraModal');
+        modal.style.display = 'none';
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
+        currentImageBase64 = null;
+    }
+    
     // ==================== KHỞI TẠO ====================
     window.onload = async () => {
         await loadMedicalKnowledge();
@@ -970,6 +1132,11 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
         const sendBtn = document.getElementById('sendButton');
         const inputField = document.getElementById('userInput');
         const clearBtn = document.getElementById('clearChatBtn');
+        const skinBtn = document.getElementById('skinAnalysisBtn');
+        const closeCameraBtn = document.getElementById('closeCameraModalBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const resetBtn = document.getElementById('resetCameraBtn');
+        const analyzeBtn = document.getElementById('analyzeSkinBtn');
         
         sendBtn.addEventListener('click', () => processMessage(inputField.value.trim()));
         inputField.addEventListener('keypress', (e) => {
@@ -979,6 +1146,11 @@ Dựa trên dữ liệu bệnh học ở trên, hãy phân tích và đưa ra c�
             }
         });
         clearBtn.addEventListener('click', clearChatHistory);
+        skinBtn.addEventListener('click', openCameraModal);
+        closeCameraBtn.addEventListener('click', closeCameraModal);
+        captureBtn.addEventListener('click', captureImage);
+        resetBtn.addEventListener('click', resetCamera);
+        analyzeBtn.addEventListener('click', analyzeCapturedImage);
         
         inputField.focus();
     };
